@@ -1,5 +1,8 @@
-import Link from 'next/link';
-
 export default function Home() {
-  return <Link href='/about'>About us</Link>;
+  return (
+    <div>
+      <h1>Welcome to D&D Monster App</h1>
+      <p>Explore and create D&D monsters</p>
+    </div>
+  );
 }
