@@ -10,7 +10,6 @@ export default function Home() {
       <p className='text-center text-gray-600'>
         Explore and create D&D monsters
       </p>
-      <Link href='/monsters'>To monsters</Link>
     </div>
   );
 }
