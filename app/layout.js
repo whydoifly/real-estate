@@ -1,5 +1,9 @@
-import Navbar from '@/components/Navbar';
 import './globals.css';
+import { Inter } from 'next/font/google';
+import Navbar from '@/components/Navbar';
+import SessionWrapper from '@/components/SessionWrapper';
+
+const inter = Inter({ subsets: ['latin'] });
 
 export const metadata = {
   title: 'D&D Monster App',
@@ -9,9 +13,11 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang='en'>
-      <body className='flex flex-col min-h-screen bg-gray-800'>
-        <Navbar />
-        <main className='flex-grow overflow-auto'>{children}</main>
+      <body className={inter.className}>
+        <SessionWrapper>
+          <Navbar />
+          <main>{children}</main>
+        </SessionWrapper>
       </body>
     </html>
   );
