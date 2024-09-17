@@ -1,50 +1,42 @@
-// app/api/monsters/route.js
 import { NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '../auth/[...nextauth]/route';
 import dbConnect from '@/lib/mongodb';
 import Monster from '@/models/Monster';
 
 export async function GET(request) {
-  const { searchParams } = new URL(request.url);
-  const page = parseInt(searchParams.get('page')) || 1;
-  const limit = parseInt(searchParams.get('limit')) || 10;
-  const search = searchParams.get('search') || '';
-  const skip = (page - 1) * limit;
-
   await dbConnect();
 
   try {
-    let query = {};
-    if (search) {
-      query = {
-        $or: [
-          { name: { $regex: search, $options: 'i' } },
-          { type: { $regex: search, $options: 'i' } },
-          { description: { $regex: search, $options: 'i' } },
-        ],
-      };
-    }
-
-    const total = await Monster.countDocuments(query);
-    const monsters = await Monster.find(query).skip(skip).limit(limit).lean();
-
-    return NextResponse.json({
-      monsters,
-      total,
-      page,
-      totalPages: Math.ceil(total / limit),
-    });
+    const monsters = await Monster.find({}).lean();
+    return NextResponse.json({ monsters }); // Wrap monsters in an object
   } catch (error) {
     console.error('Error fetching monsters:', error);
     return NextResponse.json(
-      { error: 'Internal Server Error' },
+      { error: 'Failed to fetch monsters' },
       { status: 500 }
     );
   }
 }
 
 export async function POST(request) {
+  const session = await getServerSession(authOptions);
+
+  if (!session || session.user.role !== 'admin') {
+    return NextResponse.json({ error: 'Not authorized' }, { status: 403 });
+  }
+
   await dbConnect();
-  const data = await request.json();
-  const monster = await Monster.create(data);
-  return NextResponse.json(monster);
+
+  try {
+    const data = await request.json();
+    const monster = await Monster.create(data);
+    return NextResponse.json({ monster }, { status: 201 }); // Wrap monster in an object
+  } catch (error) {
+    console.error('Error creating monster:', error);
+    return NextResponse.json(
+      { error: 'Failed to create monster' },
+      { status: 500 }
+    );
+  }
 }
