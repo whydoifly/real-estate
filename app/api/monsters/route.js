@@ -1,41 +1,89 @@
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from '../auth/[...nextauth]/route';
 import dbConnect from '@/lib/mongodb';
 import Monster from '@/models/Monster';
 
 export async function GET(request) {
-  await dbConnect();
+  console.log('GET /api/monsters called');
 
   try {
+    console.log('Attempting to connect to database...');
+    await dbConnect();
+    console.log('Database connection successful');
+
+    console.log('Fetching monsters...');
     const monsters = await Monster.find({}).lean();
-    return NextResponse.json({ monsters }); // Wrap monsters in an object
+    console.log(`Found ${monsters.length} monsters`);
+
+    return NextResponse.json({ monsters });
   } catch (error) {
-    console.error('Error fetching monsters:', error);
+    console.error('Error in GET /api/monsters:', error);
+
+    // Return more detailed error information
     return NextResponse.json(
-      { error: 'Failed to fetch monsters' },
+      {
+        error: 'Failed to fetch monsters',
+        details: error.message,
+        stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
+      },
       { status: 500 }
     );
   }
 }
 
 export async function POST(request) {
-  const session = await getServerSession(authOptions);
-
-  if (!session || session.user.role !== 'admin') {
-    return NextResponse.json({ error: 'Not authorized' }, { status: 403 });
-  }
-
-  await dbConnect();
+  console.log('POST /api/monsters called');
 
   try {
-    const data = await request.json();
-    const monster = await Monster.create(data);
-    return NextResponse.json({ monster }, { status: 201 }); // Wrap monster in an object
+    await dbConnect();
+    console.log('Database connection successful');
+
+    const data = await request.formData();
+    console.log(
+      'Received form data:',
+      [...data.entries()].map(([key, value]) =>
+        key === 'image' ? `${key}: [File]` : `${key}: ${value}`
+      )
+    );
+
+    const file = data.get('image');
+    let imagePath = null;
+
+    if (file) {
+      // ... image handling code ...
+    }
+
+    const monsterData = {
+      name: data.get('name'),
+      type: data.get('type'),
+      size: data.get('size'),
+      alignment: data.get('alignment'),
+      armorClass: Number(data.get('armorClass')),
+      hitPoints: Number(data.get('hitPoints')),
+      speed: data.get('speed'),
+      strength: Number(data.get('strength')),
+      dexterity: Number(data.get('dexterity')),
+      constitution: Number(data.get('constitution')),
+      intelligence: Number(data.get('intelligence')),
+      wisdom: Number(data.get('wisdom')),
+      charisma: Number(data.get('charisma')),
+      challengeRating: Number(data.get('challengeRating')),
+      description: data.get('description'),
+      image: imagePath,
+    };
+
+    console.log('Creating monster with data:', monsterData);
+    const monster = await Monster.create(monsterData);
+    console.log('Monster created successfully:', monster._id);
+
+    return NextResponse.json({ monster }, { status: 201 });
   } catch (error) {
-    console.error('Error creating monster:', error);
+    console.error('Error in POST /api/monsters:', error);
     return NextResponse.json(
-      { error: 'Failed to create monster' },
+      {
+        error: 'Failed to create monster',
+        details: error.message,
+        stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
+      },
       { status: 500 }
     );
   }
