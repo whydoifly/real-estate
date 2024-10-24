@@ -16,12 +16,6 @@ export default async function Dashboard() {
       </h1>
 
       {/* Content for all users */}
-      <div className='mb-6'>
-        <h2 className='text-xl font-semibold mb-2'>Your Heroes</h2>
-        <Link href='/heroes' className='text-blue-500 hover:underline'>
-          Manage Your Heroes
-        </Link>
-      </div>
 
       {/* Admin-only content */}
       {session.user.role === 'admin' && (
@@ -32,14 +26,14 @@ export default async function Dashboard() {
               <Link
                 href='/admin/users'
                 className='text-blue-500 hover:underline'>
-                Manage Users
+                Управление пользователями
               </Link>
             </li>
             <li>
               <Link
-                href='/admin/monsters'
+                href='/admin/properties'
                 className='text-blue-500 hover:underline'>
-                Manage Monsters
+                Управление объектами
               </Link>
             </li>
           </ul>

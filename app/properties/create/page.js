@@ -3,55 +3,78 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-export default function CreateMonster() {
+export default function CreateProperty() {
   const [formData, setFormData] = useState({
-    name: '',
+    photos: '',
+    address: '',
+    district: '',
     type: '',
     size: '',
-    alignment: '',
-    armorClass: '',
-    hitPoints: '',
-    speed: '',
-    strength: '',
-    dexterity: '',
-    constitution: '',
-    intelligence: '',
-    wisdom: '',
-    charisma: '',
+    bedrooms: '',
+    price: '',
+    commission: '',
     description: '',
+    features: '',
+    allowedPets: false,
+    allowedChildren: false,
   });
   const router = useRouter();
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value, type, checked } = e.target;
+    setFormData({
+      ...formData,
+      [name]: type === 'checkbox' ? checked : value,
+    });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await fetch('/api/monsters', {
+    const formattedData = {
+      ...formData,
+      photos: formData.photos.split(',').map((photo) => photo.trim()),
+      features: formData.features.split(',').map((feature) => feature.trim()),
+    };
+    const res = await fetch('/api/properties', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(formData),
+      body: JSON.stringify(formattedData),
     });
     if (res.ok) {
-      router.push('/monsters');
+      router.push('/properties');
     }
   };
 
   return (
     <div className='container mx-auto p-8 bg-gray-800 min-h-screen text-white'>
       <h1 className='text-4xl font-bold mb-8 text-center text-red-600'>
-        Summon New Monster
+        Создать новый объект недвижимости
       </h1>
       <form
         onSubmit={handleSubmit}
         className='bg-gray-700 p-6 rounded-lg shadow-lg max-w-2xl mx-auto'>
         <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
           <input
-            name='name'
-            value={formData.name}
+            name='photos'
+            value={formData.photos}
             onChange={handleChange}
-            placeholder='Name'
+            placeholder='Ссылки на фото через запятую'
+            required
+            className='w-full p-2 bg-gray-600 text-white rounded'
+          />
+          <input
+            name='address'
+            value={formData.address}
+            onChange={handleChange}
+            placeholder='Адрес'
+            required
+            className='w-full p-2 bg-gray-600 text-white rounded'
+          />
+          <input
+            name='district'
+            value={formData.district}
+            onChange={handleChange}
+            placeholder='Район'
             required
             className='w-full p-2 bg-gray-600 text-white rounded'
           />
@@ -59,119 +82,87 @@ export default function CreateMonster() {
             name='type'
             value={formData.type}
             onChange={handleChange}
-            placeholder='Type'
+            placeholder='Тип'
             required
             className='w-full p-2 bg-gray-600 text-white rounded'
           />
           <input
             name='size'
+            type='number'
             value={formData.size}
             onChange={handleChange}
-            placeholder='Size'
+            placeholder='Размер'
             required
             className='w-full p-2 bg-gray-600 text-white rounded'
           />
           <input
-            name='alignment'
-            value={formData.alignment}
-            onChange={handleChange}
-            placeholder='Alignment'
-            required
-            className='w-full p-2 bg-gray-600 text-white rounded'
-          />
-          <input
-            name='armorClass'
+            name='bedrooms'
             type='number'
-            value={formData.armorClass}
+            value={formData.bedrooms}
             onChange={handleChange}
-            placeholder='Armor Class'
+            placeholder='Количество спален'
             required
             className='w-full p-2 bg-gray-600 text-white rounded'
           />
           <input
-            name='hitPoints'
+            name='price'
             type='number'
-            value={formData.hitPoints}
+            value={formData.price}
             onChange={handleChange}
-            placeholder='Hit Points'
+            placeholder='Цена'
             required
             className='w-full p-2 bg-gray-600 text-white rounded'
           />
           <input
-            name='speed'
-            value={formData.speed}
-            onChange={handleChange}
-            placeholder='Speed'
-            required
-            className='w-full p-2 bg-gray-600 text-white rounded'
-          />
-          <input
-            name='strength'
+            name='commission'
             type='number'
-            value={formData.strength}
+            value={formData.commission}
             onChange={handleChange}
-            placeholder='Strength'
+            placeholder='Комиссия'
             required
             className='w-full p-2 bg-gray-600 text-white rounded'
           />
           <input
-            name='dexterity'
-            type='number'
-            value={formData.dexterity}
+            name='features'
+            value={formData.features}
             onChange={handleChange}
-            placeholder='Dexterity'
+            placeholder='Особенности через запятую'
             required
             className='w-full p-2 bg-gray-600 text-white rounded'
           />
-          <input
-            name='constitution'
-            type='number'
-            value={formData.constitution}
-            onChange={handleChange}
-            placeholder='Constitution'
-            required
-            className='w-full p-2 bg-gray-600 text-white rounded'
-          />
-          <input
-            name='intelligence'
-            type='number'
-            value={formData.intelligence}
-            onChange={handleChange}
-            placeholder='Intelligence'
-            required
-            className='w-full p-2 bg-gray-600 text-white rounded'
-          />
-          <input
-            name='wisdom'
-            type='number'
-            value={formData.wisdom}
-            onChange={handleChange}
-            placeholder='Wisdom'
-            required
-            className='w-full p-2 bg-gray-600 text-white rounded'
-          />
-          <input
-            name='charisma'
-            type='number'
-            value={formData.charisma}
-            onChange={handleChange}
-            placeholder='Charisma'
-            required
-            className='w-full p-2 bg-gray-600 text-white rounded'
-          />
+          <div>
+            <label htmlFor='allowedPets'>Можно с животными</label>
+            <input
+              name='allowedPets'
+              type='checkbox'
+              checked={formData.allowedPets}
+              onChange={handleChange}
+              className='ml-2'
+            />
+          </div>
+          <div>
+            <label htmlFor='allowedChildren'>Можно с детьми</label>
+            <input
+              name='allowedChildren'
+              type='checkbox'
+              checked={formData.allowedChildren}
+              onChange={handleChange}
+              className='ml-2'
+            />
+          </div>
         </div>
         <textarea
           name='description'
           value={formData.description}
           onChange={handleChange}
-          placeholder='Description'
+          placeholder='Подробное описание'
           required
           className='w-full p-2 bg-gray-600 text-white rounded mt-4 h-32'
         />
         <button
           type='submit'
           className='bg-red-600 text-white px-6 py-2 rounded-full mt-6 hover:bg-red-700 transition duration-300 w-full'>
-          Summon Monster
+          Создать объект
         </button>
       </form>
     </div>

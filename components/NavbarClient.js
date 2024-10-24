@@ -15,46 +15,41 @@ export default function NavbarClient() {
           <Link
             href='/'
             className='text-2xl font-bold text-red-600 hover:text-red-500 transition duration-300'>
-            D&D Monster Codex
+            Аренда недвижимости
           </Link>
 
           {/* Desktop Menu */}
           <div className='hidden md:flex space-x-4'>
             <Link
-              href='/monsters'
+              href='/properties'
               className='hover:text-red-500 transition duration-300'>
-              Monsters
+              Квартиры
             </Link>
             {status === 'authenticated' && (
               <>
                 <Link
                   href='/dashboard'
                   className='hover:text-red-500 transition duration-300'>
-                  Dashboard
-                </Link>
-                <Link
-                  href='/heroes'
-                  className='hover:text-red-500 transition duration-300'>
-                  Heroes
+                  Панель управления
                 </Link>
                 {session.user.role === 'admin' && (
                   <>
                     <Link
                       href='/admin/users'
                       className='hover:text-red-500 transition duration-300'>
-                      Manage Users
+                      Управление пользователями
                     </Link>
                     <Link
-                      href='/admin/monsters'
+                      href='/admin/properties'
                       className='hover:text-red-500 transition duration-300'>
-                      Manage Monsters
+                      Управление объектами
                     </Link>
                   </>
                 )}
                 <button
                   onClick={() => signOut()}
                   className='hover:text-red-500 transition duration-300'>
-                  Logout
+                  Выйти
                 </button>
               </>
             )}
