@@ -10,7 +10,7 @@ export async function GET() {
   } catch (error) {
     console.error('Error fetching properties:', error);
     return NextResponse.json(
-      { error: 'Internal Server Error' },
+      { error: 'Failed to fetch properties', details: error.message },
       { status: 500 }
     );
   }

@@ -58,12 +58,12 @@ export default function NavbarClient() {
                 <Link
                   href='/login'
                   className='hover:text-red-500 transition duration-300'>
-                  Login
+                  Войти
                 </Link>
                 <Link
                   href='/register'
                   className='hover:text-red-500 transition duration-300'>
-                  Register
+                  Регистрация
                 </Link>
               </>
             )}
@@ -97,40 +97,35 @@ export default function NavbarClient() {
         {isMenuOpen && (
           <div className='md:hidden mt-4 space-y-2'>
             <Link
-              href='/monsters'
+              href='/properties'
               className='block hover:text-red-500 transition duration-300'>
-              Monsters
+              Квартиры
             </Link>
             {status === 'authenticated' && (
               <>
                 <Link
                   href='/dashboard'
                   className='block hover:text-red-500 transition duration-300'>
-                  Dashboard
-                </Link>
-                <Link
-                  href='/heroes'
-                  className='block hover:text-red-500 transition duration-300'>
-                  Heroes
+                  Панель управления
                 </Link>
                 {session.user.role === 'admin' && (
                   <>
                     <Link
                       href='/admin/users'
                       className='block hover:text-red-500 transition duration-300'>
-                      Manage Users
+                      Управление пользователями
                     </Link>
                     <Link
-                      href='/admin/monsters'
+                      href='/admin/properties'
                       className='block hover:text-red-500 transition duration-300'>
-                      Manage Monsters
+                      Управление объектами
                     </Link>
                   </>
                 )}
                 <button
                   onClick={() => signOut()}
                   className='block hover:text-red-500 transition duration-300'>
-                  Logout
+                  Выйти
                 </button>
               </>
             )}
@@ -139,12 +134,12 @@ export default function NavbarClient() {
                 <Link
                   href='/login'
                   className='block hover:text-red-500 transition duration-300'>
-                  Login
+                  Войти
                 </Link>
                 <Link
                   href='/register'
                   className='block hover:text-red-500 transition duration-300'>
-                  Register
+                  Регистрация
                 </Link>
               </>
             )}
