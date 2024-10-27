@@ -2,12 +2,17 @@
 
 import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
+import FsLightbox from 'fslightbox-react';
 
 export default function PropertyDetail() {
   const pathname = usePathname();
   const [property, setProperty] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [lightboxController, setLightboxController] = useState({
+    toggler: false,
+    slide: 1,
+  });
 
   // Extract the ID from the pathname
   const id = pathname.split('/').pop();
@@ -33,6 +38,13 @@ export default function PropertyDetail() {
 
     fetchProperty();
   }, [id]);
+
+  const openLightboxOnSlide = (slideIndex) => {
+    setLightboxController({
+      toggler: !lightboxController.toggler,
+      slide: slideIndex,
+    });
+  };
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
@@ -68,11 +80,22 @@ export default function PropertyDetail() {
           <h2 className='text-2xl font-bold mb-4 text-red-500'>Photos</h2>
           <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
             {property.photos.map((photo, index) => (
-              <img key={index} src={photo} alt={`Property photo ${index + 1}`} className='rounded-lg shadow-lg' />
+              <img
+                key={index}
+                src={photo}
+                alt={`Property photo ${index + 1}`}
+                className='rounded-lg shadow-lg cursor-pointer'
+                onClick={() => openLightboxOnSlide(index + 1)}
+              />
             ))}
           </div>
         </div>
       </div>
+      <FsLightbox
+        toggler={lightboxController.toggler}
+        sources={property.photos}
+        slide={lightboxController.slide}
+      />
     </div>
   );
 }
