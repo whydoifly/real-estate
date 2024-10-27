@@ -36,8 +36,8 @@ export default function EditProperty() {
   }, [id]);
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setProperty({ ...property, [name]: value });
+    const { name, value, type, checked } = e.target;
+    setProperty({ ...property, [name]: type === 'checkbox' ? checked : value });
   };
 
   const handleSubmit = async (e) => {
@@ -51,7 +51,7 @@ export default function EditProperty() {
       if (!res.ok) {
         throw new Error('Failed to update property');
       }
-      router.push('/admin/properties'); // Use the router from next/navigation
+      router.push('/admin/properties');
     } catch (error) {
       console.error('Error updating property:', error);
       setError(error.message);
@@ -84,11 +84,42 @@ export default function EditProperty() {
           className='w-full p-2 bg-gray-600 text-white rounded mb-4'
         />
         <input
+          name='size'
+          type='number'
+          value={property.size}
+          onChange={handleInputChange}
+          placeholder='Size'
+          className='w-full p-2 bg-gray-600 text-white rounded mb-4'
+        />
+        <input
+          name='bedrooms'
+          type='number'
+          value={property.bedrooms}
+          onChange={handleInputChange}
+          placeholder='Bedrooms'
+          className='w-full p-2 bg-gray-600 text-white rounded mb-4'
+        />
+        <input
           name='price'
           type='number'
           value={property.price}
           onChange={handleInputChange}
           placeholder='Price'
+          className='w-full p-2 bg-gray-600 text-white rounded mb-4'
+        />
+        <input
+          name='commission'
+          type='number'
+          value={property.commission}
+          onChange={handleInputChange}
+          placeholder='Commission'
+          className='w-full p-2 bg-gray-600 text-white rounded mb-4'
+        />
+        <input
+          name='district'
+          value={property.district}
+          onChange={handleInputChange}
+          placeholder='District'
           className='w-full p-2 bg-gray-600 text-white rounded mb-4'
         />
         <textarea

@@ -2,6 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Pagination, Navigation } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
 
 export default function PropertyList() {
   const [properties, setProperties] = useState([]);
@@ -49,6 +54,21 @@ export default function PropertyList() {
           {properties.map((property) => (
             <Link key={property._id} href={`/properties/${property._id}`}>
               <div className='bg-gray-700 p-6 rounded-lg shadow-lg hover:shadow-xl transition duration-300 hover:bg-gray-600 transform hover:-translate-y-1 hover:scale-105'>
+                <Swiper
+                  modules={[Navigation, Pagination]}
+                  navigation
+                  pagination={{ clickable: true }}
+                  className='mb-4'>
+                  {property.photos.map((photo, index) => (
+                    <SwiperSlide key={index}>
+                      <img
+                        src={photo}
+                        alt={`Property photo ${index + 1}`}
+                        className='w-full h-48 object-cover rounded-lg'
+                      />
+                    </SwiperSlide>
+                  ))}
+                </Swiper>
                 <h2 className='text-xl font-bold mb-2 text-red-500'>
                   {property.address}
                 </h2>
