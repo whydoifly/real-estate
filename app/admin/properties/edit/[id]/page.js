@@ -40,6 +40,21 @@ export default function EditProperty() {
     setProperty({ ...property, [name]: type === 'checkbox' ? checked : value });
   };
 
+  const handlePhotoChange = (index, value) => {
+    const updatedPhotos = [...property.photos];
+    updatedPhotos[index] = value;
+    setProperty({ ...property, photos: updatedPhotos });
+  };
+
+  const handleAddPhoto = () => {
+    setProperty({ ...property, photos: [...property.photos, ''] });
+  };
+
+  const handleRemovePhoto = (index) => {
+    const updatedPhotos = property.photos.filter((_, i) => i !== index);
+    setProperty({ ...property, photos: updatedPhotos });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -129,6 +144,63 @@ export default function EditProperty() {
           placeholder='Description'
           className='w-full p-2 bg-gray-600 text-white rounded mb-4'
         />
+        <input
+          name='features'
+          value={property.features.join(', ')}
+          onChange={(e) => setProperty({ ...property, features: e.target.value.split(',').map(f => f.trim()) })}
+          placeholder='Features (comma separated)'
+          className='w-full p-2 bg-gray-600 text-white rounded mb-4'
+        />
+        <div className='mb-4'>
+          <label className='text-white'>
+            <input
+              name='allowedPets'
+              type='checkbox'
+              checked={property.allowedPets}
+              onChange={handleInputChange}
+              className='mr-2'
+            />
+            Allowed Pets
+          </label>
+        </div>
+        <div className='mb-4'>
+          <label className='text-white'>
+            <input
+              name='allowedChildren'
+              type='checkbox'
+              checked={property.allowedChildren}
+              onChange={handleInputChange}
+              className='mr-2'
+            />
+            Allowed Children
+          </label>
+        </div>
+        <div className='mb-4'>
+          <h2 className='text-xl font-bold mb-2 text-red-500'>Photos</h2>
+          {property.photos.map((photo, index) => (
+            <div key={index} className='flex items-center mb-2'>
+              <input
+                type='text'
+                value={photo}
+                onChange={(e) => handlePhotoChange(index, e.target.value)}
+                placeholder={`Photo URL ${index + 1}`}
+                className='w-full p-2 bg-gray-600 text-white rounded mr-2'
+              />
+              <button
+                type='button'
+                onClick={() => handleRemovePhoto(index)}
+                className='bg-red-500 text-white px-2 py-1 rounded'>
+                Remove
+              </button>
+            </div>
+          ))}
+          <button
+            type='button'
+            onClick={handleAddPhoto}
+            className='bg-green-500 text-white px-4 py-2 rounded'>
+            Add Photo
+          </button>
+        </div>
         <button
           type='submit'
           className='bg-blue-500 text-white px-4 py-2 rounded'>
