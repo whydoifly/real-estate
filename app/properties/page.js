@@ -7,6 +7,35 @@ import { Pagination, Navigation } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
+import AWS from 'aws-sdk';
+
+// Configure AWS SDK
+AWS.config.update({
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  region: process.env.AWS_REGION,
+});
+
+const s3 = new AWS.S3();
+const bucketName = process.env.AWS_S3_BUCKET_NAME;
+
+// Function to upload image to S3
+async function uploadImageToS3(file) {
+  const params = {
+    Bucket: bucketName,
+    Key: `properties/${file.name}`,
+    Body: file,
+    ACL: 'public-read',
+  };
+
+  try {
+    const data = await s3.upload(params).promise();
+    return data.Location; // Return the URL of the uploaded image
+  } catch (error) {
+    console.error('Error uploading image:', error);
+    throw new Error('Failed to upload image');
+  }
+}
 
 export default function PropertyList() {
   const [properties, setProperties] = useState([]);
@@ -37,6 +66,20 @@ export default function PropertyList() {
 
     fetchProperties();
   }, []);
+
+  // Example function to handle image upload
+  async function handleImageUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    try {
+      const imageUrl = await uploadImageToS3(file);
+      console.log('Image uploaded to:', imageUrl);
+      // Save imageUrl to your database associated with the property
+    } catch (error) {
+      console.error('Error uploading image:', error);
+    }
+  }
 
   if (loading) return <div className='text-center p-4'>Loading...</div>;
   if (error)
@@ -82,6 +125,8 @@ export default function PropertyList() {
           ))}
         </div>
       )}
+      {/* Add an input for image upload */}
+      <input type="file" onChange={handleImageUpload} />
     </div>
   );
 }
