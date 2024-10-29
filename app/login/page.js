@@ -6,14 +6,23 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 export default function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [formData, setFormData] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const router = useRouter();
+
+  const handleChange = (e) => {
+    const { id, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [id]: value,
+    }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+
+    const { email, password } = formData;
 
     if (!email || !password) {
       setError('Please fill in all fields');
@@ -48,8 +57,8 @@ export default function Login() {
             <input
               type='email'
               id='email'
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={formData.email}
+              onChange={handleChange}
               className='w-full p-2 rounded bg-gray-600 text-white'
               required
             />
@@ -61,8 +70,8 @@ export default function Login() {
             <input
               type='password'
               id='password'
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={formData.password}
+              onChange={handleChange}
               className='w-full p-2 rounded bg-gray-600 text-white'
               required
             />
