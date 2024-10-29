@@ -6,15 +6,13 @@ import FsLightbox from 'fslightbox-react';
 
 export default function PropertyDetail() {
   const pathname = usePathname();
-  const [property, setProperty] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [lightboxController, setLightboxController] = useState({
-    toggler: false,
-    slide: 1,
+  const [state, setState] = useState({
+    property: null,
+    loading: true,
+    error: null,
+    lightbox: { toggler: false, slide: 1 },
   });
 
-  // Extract the ID from the pathname
   const id = pathname.split('/').pop();
 
   useEffect(() => {
@@ -23,16 +21,12 @@ export default function PropertyDetail() {
     async function fetchProperty() {
       try {
         const res = await fetch(`/api/properties/${id}`);
-        if (!res.ok) {
-          throw new Error('Failed to fetch property');
-        }
+        if (!res.ok) throw new Error('Failed to fetch property');
         const data = await res.json();
-        setProperty(data);
+        setState((prevState) => ({ ...prevState, property: data, loading: false }));
       } catch (error) {
         console.error('Error fetching property:', error);
-        setError(error.message);
-      } finally {
-        setLoading(false);
+        setState((prevState) => ({ ...prevState, error: error.message, loading: false }));
       }
     }
 
@@ -40,14 +34,27 @@ export default function PropertyDetail() {
   }, [id]);
 
   const openLightboxOnSlide = (slideIndex) => {
-    setLightboxController({
-      toggler: !lightboxController.toggler,
-      slide: slideIndex,
-    });
+    setState((prevState) => ({
+      ...prevState,
+      lightbox: { toggler: !prevState.lightbox.toggler, slide: slideIndex },
+    }));
   };
+
+  const { property, loading, error, lightbox } = state;
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
+
+  const renderPropertyInfo = (title, info) => (
+    <div>
+      <h2 className='text-2xl font-bold mb-4 text-red-500'>{title}</h2>
+      {info.map(({ label, value }) => (
+        <p key={label}>
+          <strong className='text-red-400'>{label}:</strong> {value}
+        </p>
+      ))}
+    </div>
+  );
 
   return (
     <div className='container mx-auto p-8 bg-gray-800 min-h-screen text-white'>
@@ -56,21 +63,19 @@ export default function PropertyDetail() {
       </h1>
       <div className='bg-gray-700 p-6 rounded-lg shadow-lg'>
         <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-          <div>
-            <h2 className='text-2xl font-bold mb-4 text-red-500'>Basic Info</h2>
-            <p><strong className='text-red-400'>Type:</strong> {property.type}</p>
-            <p><strong className='text-red-400'>Size:</strong> {property.size}</p>
-            <p><strong className='text-red-400'>Bedrooms:</strong> {property.bedrooms}</p>
-            <p><strong className='text-red-400'>Price:</strong> ${property.price}</p>
-            <p><strong className='text-red-400'>Commission:</strong> {property.commission}</p>
-            <p><strong className='text-red-400'>District:</strong> {property.district}</p>
-          </div>
-          <div>
-            <h2 className='text-2xl font-bold mb-4 text-red-500'>Features</h2>
-            <p><strong className='text-red-400'>Allowed Pets:</strong> {property.allowedPets ? 'Yes' : 'No'}</p>
-            <p><strong className='text-red-400'>Allowed Children:</strong> {property.allowedChildren ? 'Yes' : 'No'}</p>
-            <p><strong className='text-red-400'>Features:</strong> {property.features.join(', ')}</p>
-          </div>
+          {renderPropertyInfo('Basic Info', [
+            { label: 'Type', value: property.type },
+            { label: 'Size', value: property.size },
+            { label: 'Bedrooms', value: property.bedrooms },
+            { label: 'Price', value: `$${property.price}` },
+            { label: 'Commission', value: property.commission },
+            { label: 'District', value: property.district },
+          ])}
+          {renderPropertyInfo('Features', [
+            { label: 'Allowed Pets', value: property.allowedPets ? 'Yes' : 'No' },
+            { label: 'Allowed Children', value: property.allowedChildren ? 'Yes' : 'No' },
+            { label: 'Features', value: property.features.join(', ') },
+          ])}
         </div>
         <div className='mt-6'>
           <h2 className='text-2xl font-bold mb-4 text-red-500'>Description</h2>
@@ -92,9 +97,9 @@ export default function PropertyDetail() {
         </div>
       </div>
       <FsLightbox
-        toggler={lightboxController.toggler}
+        toggler={lightbox.toggler}
         sources={property.photos}
-        slide={lightboxController.slide}
+        slide={lightbox.slide}
       />
     </div>
   );

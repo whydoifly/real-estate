@@ -125,8 +125,6 @@ export default function PropertyList() {
           ))}
         </div>
       )}
-      {/* Add an input for image upload */}
-      <input type="file" onChange={handleImageUpload} />
     </div>
   );
 }

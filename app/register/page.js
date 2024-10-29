@@ -5,15 +5,27 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 export default function Register() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [nickname, setNickname] = useState('');
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    nickname: '',
+  });
   const [error, setError] = useState('');
   const router = useRouter();
+
+  const handleChange = (e) => {
+    const { id, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [id]: value,
+    }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+
+    const { email, password, nickname } = formData;
 
     if (!email || !password || !nickname) {
       setError('Please fill in all fields');
@@ -33,10 +45,9 @@ export default function Register() {
     try {
       console.log('Submitting registration data:', { email, nickname });
       const res = await fetch('/api/register', {
-        // Note the changed API route
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, nickname }),
+        body: JSON.stringify(formData),
       });
 
       console.log('Response status:', res.status);
@@ -80,45 +91,21 @@ export default function Register() {
         </h1>
         {error && <p className='text-red-500 mb-4'>{error}</p>}
         <form onSubmit={handleSubmit}>
-          <div className='mb-4'>
-            <label htmlFor='email' className='block text-white mb-2'>
-              Email
-            </label>
-            <input
-              type='email'
-              id='email'
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className='w-full p-2 rounded bg-gray-600 text-white'
-              required
-            />
-          </div>
-          <div className='mb-4'>
-            <label htmlFor='password' className='block text-white mb-2'>
-              Password
-            </label>
-            <input
-              type='password'
-              id='password'
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className='w-full p-2 rounded bg-gray-600 text-white'
-              required
-            />
-          </div>
-          <div className='mb-6'>
-            <label htmlFor='nickname' className='block text-white mb-2'>
-              Nickname
-            </label>
-            <input
-              type='text'
-              id='nickname'
-              value={nickname}
-              onChange={(e) => setNickname(e.target.value)}
-              className='w-full p-2 rounded bg-gray-600 text-white'
-              required
-            />
-          </div>
+          {['email', 'password', 'nickname'].map((field) => (
+            <div className='mb-4' key={field}>
+              <label htmlFor={field} className='block text-white mb-2'>
+                {field.charAt(0).toUpperCase() + field.slice(1)}
+              </label>
+              <input
+                type={field === 'password' ? 'password' : 'text'}
+                id={field}
+                value={formData[field]}
+                onChange={handleChange}
+                className='w-full p-2 rounded bg-gray-600 text-white'
+                required
+              />
+            </div>
+          ))}
           <button
             type='submit'
             className='w-full bg-red-600 text-white p-2 rounded hover:bg-red-700'>
