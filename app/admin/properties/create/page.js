@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 
 export default function CreateProperty() {
   const [formData, setFormData] = useState({
-    photos: '',
+    photos: [],
     address: '',
     district: '',
     type: '',
@@ -28,17 +28,38 @@ export default function CreateProperty() {
     });
   };
 
+  const cloudName = 'ddpoin0s6';
+
+  const handleImageUpload = async (e) => {
+    const files = e.target.files;
+    const uploadedPhotos = [];
+
+    for (let file of files) {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('upload_preset', 'basic-preset');
+
+      const res = await fetch(`https://api.cloudinary.com/v1_1/ddpoin0s6/image/upload`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await res.json();
+      uploadedPhotos.push(data.secure_url);
+    }
+
+    setFormData((prevData) => ({
+      ...prevData,
+      photos: uploadedPhotos,
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const formattedData = {
-      ...formData,
-      photos: formData.photos.split(',').map((photo) => photo.trim()),
-      features: formData.features.split(',').map((feature) => feature.trim()),
-    };
     const res = await fetch('/api/properties', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(formattedData),
+      body: JSON.stringify(formData),
     });
     if (res.ok) {
       router.push('/properties');
@@ -55,11 +76,9 @@ export default function CreateProperty() {
         className='bg-gray-700 p-6 rounded-lg shadow-lg max-w-2xl mx-auto'>
         <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
           <input
-            name='photos'
-            value={formData.photos}
-            onChange={handleChange}
-            placeholder='Ссылки на фото через запятую'
-            required
+            type='file'
+            multiple
+            onChange={handleImageUpload}
             className='w-full p-2 bg-gray-600 text-white rounded'
           />
           <input

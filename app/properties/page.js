@@ -21,14 +21,8 @@ export default function PropertyList() {
           throw new Error('Failed to fetch properties');
         }
         const data = await res.json();
-        if (Array.isArray(data.properties)) {
-          setProperties(data.properties);
-        } else {
-          console.error('Unexpected data format:', data);
-          setError('Unexpected data format from server');
-        }
+        setProperties(data.properties);
       } catch (error) {
-        console.error('Error fetching properties:', error);
         setError(error.message);
       } finally {
         setLoading(false);
@@ -39,8 +33,7 @@ export default function PropertyList() {
   }, []);
 
   if (loading) return <div className='text-center p-4'>Loading...</div>;
-  if (error)
-    return <div className='text-center p-4 text-red-500'>Error: {error}</div>;
+  if (error) return <div className='text-center p-4 text-red-500'>Error: {error}</div>;
 
   return (
     <div className='container mx-auto p-4 bg-gray-800 min-h-screen text-white'>
