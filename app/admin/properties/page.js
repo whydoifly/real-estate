@@ -41,7 +41,6 @@ export default function AdminPropertyList() {
       if (!res.ok) {
         throw new Error('Failed to delete property');
       }
-      // Remove the deleted property from the state
       setProperties((prevProperties) =>
         prevProperties.filter((property) => property._id !== propertyId)
       );
@@ -60,6 +59,13 @@ export default function AdminPropertyList() {
       <h1 className='text-4xl font-bold mb-8 text-center text-red-600'>
         Admin: Manage Properties
       </h1>
+      <div className='text-center mb-8'>
+        <Link href='/admin/properties/create'>
+          <button className='bg-green-500 text-white px-4 py-2 rounded'>
+            Создать
+          </button>
+        </Link>
+      </div>
       {properties.length === 0 ? (
         <p className='text-center text-xl'>No properties found.</p>
       ) : (
@@ -76,13 +82,13 @@ export default function AdminPropertyList() {
               </p>
               <Link href={`/admin/properties/edit/${property._id}`}>
                 <button className='mt-4 bg-blue-500 text-white px-4 py-2 rounded'>
-                  Edit
+                  Редактировать
                 </button>
               </Link>
               <button
                 onClick={() => handleDelete(property._id)}
                 className='mt-4 ml-2 bg-red-500 text-white px-4 py-2 rounded'>
-                Delete
+                Удалить
               </button>
             </div>
           ))}
