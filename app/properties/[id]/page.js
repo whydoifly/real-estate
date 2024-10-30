@@ -72,8 +72,8 @@ export default function PropertyDetail() {
             { label: 'District', value: property.district },
           ])}
           {renderPropertyInfo('Features', [
-            { label: 'Allowed Pets', value: property.allowedPets ? 'Yes' : 'No' },
-            { label: 'Allowed Children', value: property.allowedChildren ? 'Yes' : 'No' },
+            { label: 'Allowed Pets', value: property.allowedPets ? '✅' : '❌' },
+            { label: 'Allowed Children', value: property.allowedChildren ? '✅' : '❌' },
             { label: 'Features', value: property.features.join(', ') },
           ])}
         </div>
