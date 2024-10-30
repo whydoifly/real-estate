@@ -33,6 +33,24 @@ export default function AdminPropertyList() {
     fetchProperties();
   }, []);
 
+  const handleDelete = async (propertyId) => {
+    try {
+      const res = await fetch(`/api/properties/${propertyId}`, {
+        method: 'DELETE',
+      });
+      if (!res.ok) {
+        throw new Error('Failed to delete property');
+      }
+      // Remove the deleted property from the state
+      setProperties((prevProperties) =>
+        prevProperties.filter((property) => property._id !== propertyId)
+      );
+    } catch (error) {
+      console.error('Error deleting property:', error);
+      setError(error.message);
+    }
+  };
+
   if (loading) return <div className='text-center p-4'>Loading...</div>;
   if (error)
     return <div className='text-center p-4 text-red-500'>Error: {error}</div>;
@@ -61,6 +79,11 @@ export default function AdminPropertyList() {
                   Edit
                 </button>
               </Link>
+              <button
+                onClick={() => handleDelete(property._id)}
+                className='mt-4 ml-2 bg-red-500 text-white px-4 py-2 rounded'>
+                Delete
+              </button>
             </div>
           ))}
         </div>
