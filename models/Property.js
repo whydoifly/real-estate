@@ -4,11 +4,19 @@ const PropertySchema = new mongoose.Schema(
   {
     photos: {
       type: [String],
-      required: [true, 'Photos are required'],
+      required: false,
     },
     address: {
       type: String,
       required: [true, 'Address is required'],
+    },
+    occupancy: {
+      type: String,
+      required: [true, 'Occupancy is required'],
+    },
+    ownerPhone: {
+      type: String,
+      required: [true, 'Owner Phone is required'],
     },
     district: {
       type: String,

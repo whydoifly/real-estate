@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Swiper, SwiperSlide } from 'swiper/react';
+import LoadingSpinner from '@/components/LoadingSpinner';
 import { Pagination, Navigation } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
@@ -13,6 +14,7 @@ export default function PropertyList() {
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     async function fetchProperties() {
@@ -33,7 +35,7 @@ export default function PropertyList() {
     fetchProperties();
   }, []);
 
-  if (loading) return <div className='text-center p-4'>Loading...</div>;
+  if (loading) return <LoadingSpinner />;
   if (error)
     return <div className='text-center p-4 text-red-500'>Error: {error}</div>;
 
@@ -71,6 +73,12 @@ export default function PropertyList() {
                 </h2>
                 <p className='text-gray-300'>Type: {property.type}</p>
                 <p className='text-gray-300'>Price: ${property.price}</p>
+
+                <p className='text-gray-300'>Телефон: {property.ownerPhone}</p>
+
+                <p className='text-gray-300'>
+                  Occupancy: {property.occupancy || 'Free to enter'}
+                </p>
                 <p className='text-gray-300 mt-2 truncate'>
                   {property.description}
                 </p>

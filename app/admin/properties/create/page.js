@@ -8,6 +8,8 @@ export default function CreateProperty() {
     photos: [],
     address: '',
     district: '',
+    occupancy: '',
+    ownerPhone: '',
     type: '',
     size: '',
     bedrooms: '',
@@ -26,9 +28,8 @@ export default function CreateProperty() {
       ...formData,
       [name]: type === 'checkbox' ? checked : value,
     });
+    console.log(formData);
   };
-
-  const cloudName = 'ddpoin0s6';
 
   const handleImageUpload = async (e) => {
     const files = e.target.files;
@@ -39,10 +40,13 @@ export default function CreateProperty() {
       formData.append('file', file);
       formData.append('upload_preset', 'basic-preset');
 
-      const res = await fetch(`https://api.cloudinary.com/v1_1/ddpoin0s6/image/upload`, {
-        method: 'POST',
-        body: formData,
-      });
+      const res = await fetch(
+        `https://api.cloudinary.com/v1_1/ddpoin0s6/image/upload`,
+        {
+          method: 'POST',
+          body: formData,
+        }
+      );
 
       const data = await res.json();
       uploadedPhotos.push(data.secure_url);
@@ -87,6 +91,22 @@ export default function CreateProperty() {
             onChange={handleChange}
             placeholder='Адрес'
             required
+            className='w-full p-2 bg-gray-600 text-white rounded'
+          />
+          <input
+            type='text'
+            name='ownerPhone'
+            placeholder='Номер владельца'
+            value={formData.ownerPhone || ''}
+            onChange={handleChange}
+            className='w-full p-2 bg-gray-600 text-white rounded'
+          />
+          <input
+            type='text'
+            name='occupancy'
+            placeholder='Занятость'
+            value={formData.occupancy}
+            onChange={handleChange}
             className='w-full p-2 bg-gray-600 text-white rounded'
           />
           <input

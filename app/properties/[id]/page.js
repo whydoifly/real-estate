@@ -14,10 +14,19 @@ export default function PropertyDetail() {
     error: null,
     lightbox: { toggler: false, slide: 1 },
   });
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const id = pathname.split('/').pop();
 
   useEffect(() => {
+    async function checkAdminStatus() {
+      const res = await fetch('/api/check-admin');
+      const data = await res.json();
+      setIsAdmin(data.isAdmin);
+    }
+
+    checkAdminStatus();
+
     if (!id) return;
 
     async function fetchProperty() {
@@ -78,6 +87,8 @@ export default function PropertyDetail() {
             { label: 'Price', value: `$${property.price}` },
             { label: 'Commission', value: property.commission },
             { label: 'District', value: property.district },
+            { label: 'Occupancy', value: property.occupancy || 'Free to enter' },
+            ...(isAdmin ? [{ label: 'Owner Phone', value: property.ownerPhone }] : []),
           ])}
           {renderPropertyInfo('Features', [
             { label: 'Allowed Pets', value: property.allowedPets ? '✅' : '❌' },
@@ -99,8 +110,8 @@ export default function PropertyDetail() {
                 alt={`Property photo ${index + 1}`}
                 className='rounded-lg shadow-lg cursor-pointer'
                 onClick={() => openLightboxOnSlide(index + 1)}
-                width={300}
-                height={200}
+                width={600}
+                height={600}
               />
             ))}
           </div>

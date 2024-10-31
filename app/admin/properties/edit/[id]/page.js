@@ -92,6 +92,22 @@ export default function EditProperty() {
           className='w-full p-2 bg-gray-600 text-white rounded mb-4'
         />
         <input
+          type='text'
+          name='ownerPhone'
+          placeholder='Номер владельца'
+          value={property.ownerPhone || ''}
+          onChange={handleInputChange}
+          className='w-full p-2 bg-gray-600 text-white rounded mb-4'
+        />
+        <input
+          type='text'
+          name='occupancy'
+          placeholder='Занятость'
+          value={property.occupancy}
+          onChange={handleInputChange}
+          className='w-full p-2 bg-gray-600 text-white rounded mb-4'
+        />
+        <input
           name='type'
           value={property.type}
           onChange={handleInputChange}
@@ -147,7 +163,12 @@ export default function EditProperty() {
         <input
           name='features'
           value={property.features.join(', ')}
-          onChange={(e) => setProperty({ ...property, features: e.target.value.split(',').map(f => f.trim()) })}
+          onChange={(e) =>
+            setProperty({
+              ...property,
+              features: e.target.value.split(',').map((f) => f.trim()),
+            })
+          }
           placeholder='Features (comma separated)'
           className='w-full p-2 bg-gray-600 text-white rounded mb-4'
         />
