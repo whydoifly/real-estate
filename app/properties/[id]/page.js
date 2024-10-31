@@ -1,11 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import FsLightbox from 'fslightbox-react';
+import Image from 'next/image';
 
 export default function PropertyDetail() {
   const pathname = usePathname();
+  const router = useRouter();
   const [state, setState] = useState({
     property: null,
     loading: true,
@@ -58,6 +60,12 @@ export default function PropertyDetail() {
 
   return (
     <div className='container mx-auto p-8 bg-gray-800 min-h-screen text-white'>
+      <button
+        className='mb-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700'
+        onClick={() => router.push('/properties')}
+      >
+        Get to the list of properties
+      </button>
       <h1 className='text-4xl font-bold mb-8 text-center text-red-600'>
         {property.address}
       </h1>
@@ -85,12 +93,14 @@ export default function PropertyDetail() {
           <h2 className='text-2xl font-bold mb-4 text-red-500'>Photos</h2>
           <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
             {property.photos.map((photo, index) => (
-              <img
+              <Image
                 key={index}
                 src={photo}
                 alt={`Property photo ${index + 1}`}
                 className='rounded-lg shadow-lg cursor-pointer'
                 onClick={() => openLightboxOnSlide(index + 1)}
+                width={300}
+                height={200}
               />
             ))}
           </div>

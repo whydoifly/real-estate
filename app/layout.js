@@ -6,8 +6,8 @@ import SessionWrapper from '@/components/SessionWrapper';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata = {
-  title: 'D&D Monster App',
-  description: 'Explore and create D&D monsters',
+  title: 'Real Estate Search',
+  description: 'Search and find the perfect property to rent or buy',
 };
 
 export default function RootLayout({ children }) {

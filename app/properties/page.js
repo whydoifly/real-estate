@@ -7,6 +7,7 @@ import { Pagination, Navigation } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
+import Image from 'next/image';
 
 export default function PropertyList() {
   const [properties, setProperties] = useState([]);
@@ -33,7 +34,8 @@ export default function PropertyList() {
   }, []);
 
   if (loading) return <div className='text-center p-4'>Loading...</div>;
-  if (error) return <div className='text-center p-4 text-red-500'>Error: {error}</div>;
+  if (error)
+    return <div className='text-center p-4 text-red-500'>Error: {error}</div>;
 
   return (
     <div className='container mx-auto p-4 bg-gray-800 min-h-screen text-white'>
@@ -54,9 +56,11 @@ export default function PropertyList() {
                   className='mb-4'>
                   {property.photos.map((photo, index) => (
                     <SwiperSlide key={index}>
-                      <img
+                      <Image
                         src={photo}
                         alt={`Property photo ${index + 1}`}
+                        width={500}
+                        height={300}
                         className='w-full h-48 object-cover rounded-lg'
                       />
                     </SwiperSlide>
