@@ -39,11 +39,6 @@ export default function NavbarClient() {
                       className='hover:text-red-500 transition duration-300'>
                       Управление пользователями
                     </Link>
-                    <Link
-                      href='/admin/properties'
-                      className='hover:text-red-500 transition duration-300'>
-                      Управление объектами
-                    </Link>
                   </>
                 )}
                 <button
@@ -114,11 +109,6 @@ export default function NavbarClient() {
                       href='/admin/users'
                       className='block hover:text-red-500 transition duration-300'>
                       Управление пользователями
-                    </Link>
-                    <Link
-                      href='/admin/properties'
-                      className='block hover:text-red-500 transition duration-300'>
-                      Управление объектами
                     </Link>
                   </>
                 )}
