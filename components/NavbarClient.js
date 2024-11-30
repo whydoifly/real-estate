@@ -2,11 +2,29 @@
 
 import Link from 'next/link';
 import { useSession, signOut } from 'next-auth/react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function NavbarClient() {
   const { data: session, status } = useSession();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const router = useRouter();
+
+  // Handle session changes
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      // Optionally redirect to login page
+      router.push('/login');
+      
+      // Close mobile menu if it's open
+      setIsMenuOpen(false);
+    }
+  }, [status, router]);
+
+  const handleSignOut = async () => {
+    await signOut({ redirect: true, callbackUrl: '/' });
+    setIsMenuOpen(false);
+  };
 
   return (
     <nav className='bg-gray-900 text-white shadow-lg'>
@@ -42,7 +60,7 @@ export default function NavbarClient() {
                   </>
                 )}
                 <button
-                  onClick={() => signOut()}
+                  onClick={handleSignOut}
                   className='hover:text-red-500 transition duration-300'>
                   Выйти
                 </button>
@@ -113,7 +131,7 @@ export default function NavbarClient() {
                   </>
                 )}
                 <button
-                  onClick={() => signOut()}
+                  onClick={handleSignOut}
                   className='block hover:text-red-500 transition duration-300'>
                   Выйти
                 </button>
