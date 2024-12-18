@@ -26,10 +26,18 @@ export default function PropertyDetail() {
         const res = await fetch(`/api/properties/${id}`);
         if (!res.ok) throw new Error('Failed to fetch property');
         const data = await res.json();
-        setState((prevState) => ({ ...prevState, property: data, loading: false }));
+        setState((prevState) => ({
+          ...prevState,
+          property: data,
+          loading: false,
+        }));
       } catch (error) {
         console.error('Error fetching property:', error);
-        setState((prevState) => ({ ...prevState, error: error.message, loading: false }));
+        setState((prevState) => ({
+          ...prevState,
+          error: error.message,
+          loading: false,
+        }));
       }
     }
 
@@ -63,8 +71,7 @@ export default function PropertyDetail() {
     <div className='container mx-auto p-8 bg-gray-800 min-h-screen text-white'>
       <button
         className='mb-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700'
-        onClick={() => router.push('/properties')}
-      >
+        onClick={() => router.push('/properties')}>
         Get to the list of properties
       </button>
       <h1 className='text-4xl font-bold mb-8 text-center text-red-600'>
@@ -79,12 +86,23 @@ export default function PropertyDetail() {
             { label: 'Price', value: `$${property.price}` },
             { label: 'Commission', value: property.commission },
             { label: 'District', value: property.district },
-            { label: 'Occupancy', value: property.occupancy || 'Free to enter' },
-            ...(isAdmin ? [{ label: 'Owner Phone', value: property.ownerPhone }] : []),
+            {
+              label: 'Availability',
+              value: property.occupancy ? '❌ Not Available' : '✅ Available',
+            },
+            ...(isAdmin
+              ? [{ label: 'Owner Phone', value: property.ownerPhone }]
+              : []),
           ])}
           {renderPropertyInfo('Features', [
-            { label: 'Allowed Pets', value: property.allowedPets ? '✅' : '❌' },
-            { label: 'Allowed Children', value: property.allowedChildren ? '✅' : '❌' },
+            {
+              label: 'Allowed Pets',
+              value: property.allowedPets ? '✅' : '❌',
+            },
+            {
+              label: 'Allowed Children',
+              value: property.allowedChildren ? '✅' : '❌',
+            },
             { label: 'Features', value: property.features.join(', ') },
           ])}
         </div>

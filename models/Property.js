@@ -11,7 +11,7 @@ const PropertySchema = new mongoose.Schema(
       required: [true, 'Address is required'],
     },
     occupancy: {
-      type: String,
+      type: Boolean,
       required: [true, 'Occupancy is required'],
     },
     ownerPhone: {
