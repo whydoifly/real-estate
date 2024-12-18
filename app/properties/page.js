@@ -15,6 +15,8 @@ export default function PropertyList() {
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [availabilityFilter, setAvailabilityFilter] = useState('all');
+  const [bedroomFilter, setBedroomFilter] = useState('all');
   const { data: session } = useSession();
   const isAdmin = session?.user?.role === 'admin';
 
@@ -38,12 +40,11 @@ export default function PropertyList() {
   }, []);
 
   const handleDelete = async (propertyId) => {
-
     try {
       const res = await fetch(`/api/properties/${propertyId}`, {
         method: 'DELETE',
       });
-      
+
       if (!res.ok) {
         throw new Error('Failed to delete property');
       }
@@ -58,6 +59,19 @@ export default function PropertyList() {
     }
   };
 
+  const filteredProperties = properties.filter((property) => {
+    const availabilityMatch = 
+      availabilityFilter === 'all' ? true :
+      availabilityFilter === 'available' ? !property.occupancy :
+      property.occupancy;
+
+    const bedroomMatch = 
+      bedroomFilter === 'all' ? true :
+      property.bedrooms === parseInt(bedroomFilter);
+
+    return availabilityMatch && bedroomMatch;
+  });
+
   if (loading) return <LoadingSpinner />;
   if (error)
     return <div className='text-center p-4 text-red-500'>Error: {error}</div>;
@@ -67,6 +81,28 @@ export default function PropertyList() {
       <h1 className='text-4xl font-bold mb-8 text-center text-red-600'>
         Список объектов
       </h1>
+      <div className='flex justify-center gap-4 mb-6'>
+        <select
+          value={availabilityFilter}
+          onChange={(e) => setAvailabilityFilter(e.target.value)}
+          className='bg-gray-700 text-white px-4 py-2 rounded'>
+          <option value="all">All Properties</option>
+          <option value="available">Available</option>
+          <option value="notAvailable">Not Available</option>
+        </select>
+
+        <select
+          value={bedroomFilter}
+          onChange={(e) => setBedroomFilter(e.target.value)}
+          className='bg-gray-700 text-white px-4 py-2 rounded'>
+          <option value="all">All Bedrooms</option>
+          <option value="1">1 Bedroom</option>
+          <option value="2">2 Bedrooms</option>
+          <option value="3">3 Bedrooms</option>
+          <option value="4">4 Bedrooms</option>
+          <option value="5">5+ Bedrooms</option>
+        </select>
+      </div>
       {isAdmin && (
         <div className='text-center mb-8'>
           <Link href='/admin/properties/create'>
@@ -76,11 +112,11 @@ export default function PropertyList() {
           </Link>
         </div>
       )}
-      {properties.length === 0 ? (
+      {filteredProperties.length === 0 ? (
         <p className='text-center text-xl'>No properties found.</p>
       ) : (
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
-          {properties.map((property) => (
+          {filteredProperties.map((property) => (
             <div key={property._id}>
               <Link href={`/properties/${property._id}`}>
                 <div className='bg-gray-700 p-6 rounded-lg shadow-lg hover:shadow-xl transition duration-300 hover:bg-gray-600 transform hover:-translate-y-1 hover:scale-105'>
@@ -104,15 +140,18 @@ export default function PropertyList() {
                   <h2 className='text-xl font-bold mb-2 text-red-500'>
                     {property.address}
                   </h2>
+                  <p className='text-gray-300'>Bedrooms: {property.bedrooms}</p>
                   <p className='text-gray-300'>Type: {property.type}</p>
                   <p className='text-gray-300'>Price: ${property.price}</p>
 
                   {isAdmin && (
-                    <p className='text-gray-300'>Телефон: {property.ownerPhone}</p>
+                    <p className='text-gray-300'>
+                      Телефон: {property.ownerPhone}
+                    </p>
                   )}
 
                   <p className='text-gray-300'>
-                    Occupancy: {property.occupancy || 'Free to enter'}
+                    {property.occupancy ? '❌ Not Available' : '✅ Available'}
                   </p>
                   <p className='text-gray-300 mt-2 truncate'>
                     {property.description}
@@ -126,10 +165,9 @@ export default function PropertyList() {
                       Редактировать
                     </button>
                   </Link>
-                  <button 
+                  <button
                     onClick={() => handleDelete(property._id)}
-                    className='bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600'
-                  >
+                    className='bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600'>
                     Удалить
                   </button>
                 </div>

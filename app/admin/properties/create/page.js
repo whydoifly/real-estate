@@ -8,7 +8,7 @@ export default function CreateProperty() {
     photos: [],
     address: '',
     district: '',
-    occupancy: '',
+    occupancy: false,
     ownerPhone: '',
     type: '',
     size: '',
@@ -28,7 +28,6 @@ export default function CreateProperty() {
       ...formData,
       [name]: type === 'checkbox' ? checked : value,
     });
-    console.log(formData);
   };
 
   const handleImageUpload = async (e) => {
@@ -101,14 +100,16 @@ export default function CreateProperty() {
             onChange={handleChange}
             className='w-full p-2 bg-gray-600 text-white rounded'
           />
-          <input
-            type='text'
-            name='occupancy'
-            placeholder='Занятость'
-            value={formData.occupancy}
-            onChange={handleChange}
-            className='w-full p-2 bg-gray-600 text-white rounded'
-          />
+          <div>
+            <label htmlFor='occupancy'>Занято</label>
+            <input
+              name='occupancy'
+              type='checkbox'
+              checked={formData.occupancy}
+              onChange={handleChange}
+              className='ml-2'
+            />
+          </div>
           <input
             name='district'
             value={formData.district}
