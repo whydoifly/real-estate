@@ -81,7 +81,7 @@ export default function PropertyDetail() {
         <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
           {renderPropertyInfo('Basic Info', [
             { label: 'Type', value: property.type },
-            { label: 'Size', value: property.size },
+            { label: 'Size', value: `${property.size}m²` },
             { label: 'Bedrooms', value: property.bedrooms },
             { label: 'Price', value: `$${property.price}` },
             { label: 'Commission', value: property.commission },

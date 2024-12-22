@@ -56,6 +56,8 @@ export default function PropertyList() {
   const [availabilityFilter, setAvailabilityFilter] = useState('all');
   const [bedroomFilter, setBedroomFilter] = useState('all');
   const [priceRange, setPriceRange] = useState({ min: '', max: '' });
+  const [petFilter, setPetFilter] = useState(null);
+  const [childrenFilter, setChildrenFilter] = useState(null);
   const { data: session } = useSession();
   const isAdmin = session?.user?.role === 'admin';
 
@@ -112,7 +114,15 @@ export default function PropertyList() {
       (!priceRange.min || property.price >= parseInt(priceRange.min)) &&
       (!priceRange.max || property.price <= parseInt(priceRange.max));
 
-    return availabilityMatch && bedroomMatch && priceMatch;
+    const petsMatch = 
+      petFilter === null ? true : 
+      property.allowedPets === petFilter;
+
+    const childrenMatch = 
+      childrenFilter === null ? true : 
+      property.allowedChildren === childrenFilter;
+
+    return availabilityMatch && bedroomMatch && priceMatch && petsMatch && childrenMatch;
   });
 
   const handlePriceChange = (type, value) => {
@@ -213,10 +223,90 @@ export default function PropertyList() {
                 </div>
               </div>
             </div>
+
+            <div className='space-y-4 md:col-span-2'>
+              <div className='flex flex-wrap gap-6'>
+                <div className='space-y-2'>
+                  <label className='block text-sm font-medium text-gray-300'>
+                    Pets Allowed
+                  </label>
+                  <div className='flex gap-2'>
+                    <button
+                      onClick={() => setPetFilter(null)}
+                      className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+                        petFilter === null
+                          ? 'bg-red-500 text-white'
+                          : 'bg-gray-600 text-gray-300 hover:bg-gray-500'
+                      }`}
+                    >
+                      All
+                    </button>
+                    <button
+                      onClick={() => setPetFilter(true)}
+                      className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+                        petFilter === true
+                          ? 'bg-red-500 text-white'
+                          : 'bg-gray-600 text-gray-300 hover:bg-gray-500'
+                      }`}
+                    >
+                      Yes
+                    </button>
+                    <button
+                      onClick={() => setPetFilter(false)}
+                      className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+                        petFilter === false
+                          ? 'bg-red-500 text-white'
+                          : 'bg-gray-600 text-gray-300 hover:bg-gray-500'
+                      }`}
+                    >
+                      No
+                    </button>
+                  </div>
+                </div>
+
+                <div className='space-y-2'>
+                  <label className='block text-sm font-medium text-gray-300'>
+                    Children Allowed
+                  </label>
+                  <div className='flex gap-2'>
+                    <button
+                      onClick={() => setChildrenFilter(null)}
+                      className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+                        childrenFilter === null
+                          ? 'bg-red-500 text-white'
+                          : 'bg-gray-600 text-gray-300 hover:bg-gray-500'
+                      }`}
+                    >
+                      All
+                    </button>
+                    <button
+                      onClick={() => setChildrenFilter(true)}
+                      className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+                        childrenFilter === true
+                          ? 'bg-red-500 text-white'
+                          : 'bg-gray-600 text-gray-300 hover:bg-gray-500'
+                      }`}
+                    >
+                      Yes
+                    </button>
+                    <button
+                      onClick={() => setChildrenFilter(false)}
+                      className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+                        childrenFilter === false
+                          ? 'bg-red-500 text-white'
+                          : 'bg-gray-600 text-gray-300 hover:bg-gray-500'
+                      }`}
+                    >
+                      No
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
           <div className='mt-4 flex flex-wrap gap-2'>
-            {(availabilityFilter !== 'all' || bedroomFilter !== 'all' || priceRange.min || priceRange.max) && (
+            {(availabilityFilter !== 'all' || bedroomFilter !== 'all' || priceRange.min || priceRange.max || petFilter !== null || childrenFilter !== null) && (
               <div className='text-sm text-gray-400'>
                 Active filters:
                 {availabilityFilter !== 'all' && (
@@ -232,6 +322,16 @@ export default function PropertyList() {
                 {(priceRange.min || priceRange.max) && (
                   <span className='ml-2 inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-500/20 text-red-400'>
                     Price: {priceRange.min ? `$${priceRange.min}` : '$0'} - {priceRange.max ? `$${priceRange.max}` : '∞'}
+                  </span>
+                )}
+                {petFilter !== null && (
+                  <span className='ml-2 inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-500/20 text-red-400'>
+                    Pets: {petFilter ? 'Allowed' : 'Not Allowed'}
+                  </span>
+                )}
+                {childrenFilter !== null && (
+                  <span className='ml-2 inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-500/20 text-red-400'>
+                    Children: {childrenFilter ? 'Allowed' : 'Not Allowed'}
                   </span>
                 )}
               </div>
@@ -253,11 +353,10 @@ export default function PropertyList() {
         <p className='text-center text-xl'>No properties found.</p>
       ) : (
         <div className='grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-8'>
-          {filteredProperties.map((property) => (
+          {filteredProperties.map((property, propertyIndex) => (
             <div key={property._id}>
               <Link href={`/properties/${property._id}`}>
                 <div className='bg-gray-700 rounded-xl shadow-lg hover:shadow-2xl transition duration-300 hover:bg-gray-600 transform hover:-translate-y-1'>
-                  {/* Updated image container with fixed height */}
                   <div className='relative w-full h-[300px] rounded-t-xl overflow-hidden'>
                     <Swiper
                       modules={[Navigation, Pagination]}
@@ -273,14 +372,15 @@ export default function PropertyList() {
                             fill
                             className='object-cover'
                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                            priority={index === 0}
+                            priority={propertyIndex < 2}
+                            loading={propertyIndex < 2 ? "eager" : "lazy"}
+                            quality={propertyIndex < 2 ? 100 : 75}
                           />
                         </SwiperSlide>
                       ))}
                     </Swiper>
                   </div>
 
-                  {/* Property details section */}
                   <div className='p-6'>
                     <div className='flex justify-between items-start mb-4'>
                       <h2 className='text-xl font-bold text-red-500 line-clamp-1'>
