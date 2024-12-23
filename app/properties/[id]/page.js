@@ -2,19 +2,22 @@
 
 import { useState, useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import FsLightbox from 'fslightbox-react';
 import Image from 'next/image';
 
 export default function PropertyDetail() {
   const pathname = usePathname();
   const router = useRouter();
+  const { data: session } = useSession();
+  const isAdmin = session?.user?.role === 'admin';
+  
   const [state, setState] = useState({
     property: null,
     loading: true,
     error: null,
     lightbox: { toggler: false, slide: 1 },
   });
-  const [isAdmin, setIsAdmin] = useState(false);
 
   const id = pathname.split('/').pop();
 
@@ -56,12 +59,35 @@ export default function PropertyDetail() {
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
 
+  const getBasicInfo = () => {
+    const info = [
+      { label: 'Type', value: property.type },
+      { label: 'Size', value: `${property.size}m²` },
+      { label: 'Bedrooms', value: property.bedrooms },
+      { label: 'Price', value: `$${property.price}` },
+      { label: 'Commission', value: property.commission },
+      { label: 'District', value: property.district },
+      {
+        label: 'Availability',
+        value: property.occupancy ? '❌ Not Available' : '✅ Available',
+      },
+    ];
+
+    // Only add phone number if user is admin
+    if (isAdmin) {
+      info.push({ label: 'Owner Phone', value: property.ownerPhone });
+    }
+
+    return info;
+  };
+
   const renderPropertyInfo = (title, info) => (
     <div>
       <h2 className='text-2xl font-bold mb-4 text-red-500'>{title}</h2>
       {info.map(({ label, value }) => (
-        <p key={label}>
-          <strong className='text-red-400'>{label}:</strong> {value}
+        <p key={label} className="mb-2">
+          <strong className='text-red-400'>{label}:</strong>{' '}
+          <span className="text-gray-300">{value}</span>
         </p>
       ))}
     </div>
@@ -79,21 +105,7 @@ export default function PropertyDetail() {
       </h1>
       <div className='bg-gray-700 p-6 rounded-lg shadow-lg'>
         <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-          {renderPropertyInfo('Basic Info', [
-            { label: 'Type', value: property.type },
-            { label: 'Size', value: `${property.size}m²` },
-            { label: 'Bedrooms', value: property.bedrooms },
-            { label: 'Price', value: `$${property.price}` },
-            { label: 'Commission', value: property.commission },
-            { label: 'District', value: property.district },
-            {
-              label: 'Availability',
-              value: property.occupancy ? '❌ Not Available' : '✅ Available',
-            },
-            ...(isAdmin
-              ? [{ label: 'Owner Phone', value: property.ownerPhone }]
-              : []),
-          ])}
+          {renderPropertyInfo('Basic Info', getBasicInfo())}
           {renderPropertyInfo('Features', [
             {
               label: 'Allowed Pets',
@@ -118,7 +130,7 @@ export default function PropertyDetail() {
                 key={index}
                 src={photo}
                 alt={`Property photo ${index + 1}`}
-                className='rounded-lg shadow-lg cursor-pointer'
+                className='rounded-lg shadow-lg cursor-pointer hover:opacity-90 transition-opacity'
                 onClick={() => openLightboxOnSlide(index + 1)}
                 width={600}
                 height={600}

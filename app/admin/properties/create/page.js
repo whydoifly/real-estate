@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import PropertyFormInput from '@/components/property/PropertyFormInput';
 
 export default function CreateProperty() {
   const [formData, setFormData] = useState({
@@ -20,14 +21,77 @@ export default function CreateProperty() {
     allowedPets: false,
     allowedChildren: false,
   });
+
+  const [errors, setErrors] = useState({});
   const router = useRouter();
+
+  const requiredFields = [
+    'address',
+    'district',
+    'ownerPhone',
+    'type',
+    'size',
+    'bedrooms',
+    'price',
+    'commission',
+    'features',
+  ];
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData({
-      ...formData,
-      [name]: type === 'checkbox' ? checked : value,
+    const newValue = type === 'checkbox' ? checked : value;
+    
+    setFormData(prev => ({
+      ...prev,
+      [name]: newValue
+    }));
+
+    // Validate the changed field
+    const newErrors = { ...errors };
+    
+    // Clear previous error for this field
+    delete newErrors[name];
+
+    // Check if field is required and empty
+    if (requiredFields.includes(name) && !newValue) {
+      newErrors[name] = 'This field is required';
+    }
+
+    // Validate number fields
+    if (newValue && ['size', 'bedrooms', 'price', 'commission'].includes(name)) {
+      if (isNaN(newValue)) {
+        newErrors[name] = `${name.charAt(0).toUpperCase() + name.slice(1)} must be a number`;
+      }
+    }
+
+    setErrors(newErrors);
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+
+    requiredFields.forEach(field => {
+      if (!formData[field]) {
+        newErrors[field] = 'This field is required';
+      }
     });
+
+    // Additional validations
+    if (formData.size && isNaN(formData.size)) {
+      newErrors.size = 'Size must be a number';
+    }
+    if (formData.bedrooms && isNaN(formData.bedrooms)) {
+      newErrors.bedrooms = 'Bedrooms must be a number';
+    }
+    if (formData.price && isNaN(formData.price)) {
+      newErrors.price = 'Price must be a number';
+    }
+    if (formData.commission && isNaN(formData.commission)) {
+      newErrors.commission = 'Commission must be a number';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleImageUpload = async (e) => {
@@ -59,13 +123,26 @@ export default function CreateProperty() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await fetch('/api/properties', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(formData),
-    });
-    if (res.ok) {
-      router.push('/properties');
+    
+    if (!validateForm()) {
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/properties', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+      
+      if (res.ok) {
+        router.push('/properties');
+      } else {
+        const data = await res.json();
+        setErrors({ submit: data.error || 'Failed to create property' });
+      }
+    } catch (error) {
+      setErrors({ submit: 'An error occurred while creating the property' });
     }
   };
 
@@ -77,6 +154,9 @@ export default function CreateProperty() {
       <form
         onSubmit={handleSubmit}
         className='bg-gray-700 p-6 rounded-lg shadow-lg max-w-2xl mx-auto'>
+        {errors.submit && (
+          <div className="text-red-500 mb-4 text-center">{errors.submit}</div>
+        )}
         <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
           <input
             type='file'
@@ -84,119 +164,109 @@ export default function CreateProperty() {
             onChange={handleImageUpload}
             className='w-full p-2 bg-gray-600 text-white rounded'
           />
-          <input
+          <PropertyFormInput
             name='address'
+            label='Адрес'
             value={formData.address}
             onChange={handleChange}
-            placeholder='Адрес'
+            error={errors.address}
             required
-            className='w-full p-2 bg-gray-600 text-white rounded'
           />
-          <input
-            type='text'
+          <PropertyFormInput
             name='ownerPhone'
-            placeholder='Номер владельца'
-            value={formData.ownerPhone || ''}
+            label='Номер владельца'
+            value={formData.ownerPhone}
             onChange={handleChange}
-            className='w-full p-2 bg-gray-600 text-white rounded'
+            error={errors.ownerPhone}
+            required
           />
-          <div>
-            <label htmlFor='occupancy'>Занято</label>
-            <input
-              name='occupancy'
-              type='checkbox'
-              checked={formData.occupancy}
-              onChange={handleChange}
-              className='ml-2'
-            />
-          </div>
-          <input
+          <PropertyFormInput
+            name='occupancy'
+            label='Занято'
+            type='checkbox'
+            checked={formData.occupancy}
+            onChange={handleChange}
+          />
+          <PropertyFormInput
             name='district'
+            label='Район'
             value={formData.district}
             onChange={handleChange}
-            placeholder='Район'
+            error={errors.district}
             required
-            className='w-full p-2 bg-gray-600 text-white rounded'
           />
-          <input
+          <PropertyFormInput
             name='type'
+            label='Тип'
             value={formData.type}
             onChange={handleChange}
-            placeholder='Тип'
+            error={errors.type}
             required
-            className='w-full p-2 bg-gray-600 text-white rounded'
           />
-          <input
+          <PropertyFormInput
             name='size'
+            label='Размер'
             type='number'
             value={formData.size}
             onChange={handleChange}
-            placeholder='Размер'
+            error={errors.size}
             required
-            className='w-full p-2 bg-gray-600 text-white rounded'
           />
-          <input
+          <PropertyFormInput
             name='bedrooms'
+            label='Количество спален'
             type='number'
             value={formData.bedrooms}
             onChange={handleChange}
-            placeholder='Количество спален'
+            error={errors.bedrooms}
             required
-            className='w-full p-2 bg-gray-600 text-white rounded'
           />
-          <input
+          <PropertyFormInput
             name='price'
+            label='Цена'
             type='number'
             value={formData.price}
             onChange={handleChange}
-            placeholder='Цена'
+            error={errors.price}
             required
-            className='w-full p-2 bg-gray-600 text-white rounded'
           />
-          <input
+          <PropertyFormInput
             name='commission'
+            label='Комиссия'
             type='number'
             value={formData.commission}
             onChange={handleChange}
-            placeholder='Комиссия'
+            error={errors.commission}
             required
-            className='w-full p-2 bg-gray-600 text-white rounded'
           />
-          <input
+          <PropertyFormInput
             name='features'
+            label='Особенности через запятую'
             value={formData.features}
             onChange={handleChange}
-            placeholder='Особенности через запятую'
+            error={errors.features}
             required
-            className='w-full p-2 bg-gray-600 text-white rounded'
           />
-          <div>
-            <label htmlFor='allowedPets'>Можно с животными</label>
-            <input
-              name='allowedPets'
-              type='checkbox'
-              checked={formData.allowedPets}
-              onChange={handleChange}
-              className='ml-2'
-            />
-          </div>
-          <div>
-            <label htmlFor='allowedChildren'>Можно с детьми</label>
-            <input
-              name='allowedChildren'
-              type='checkbox'
-              checked={formData.allowedChildren}
-              onChange={handleChange}
-              className='ml-2'
-            />
-          </div>
+          <PropertyFormInput
+            name='allowedPets'
+            label='Можно с животными'
+            type='checkbox'
+            checked={formData.allowedPets}
+            onChange={handleChange}
+          />
+          <PropertyFormInput
+            name='allowedChildren'
+            label='Можно с детьми'
+            type='checkbox'
+            checked={formData.allowedChildren}
+            onChange={handleChange}
+          />
         </div>
         <textarea
           name='description'
           value={formData.description}
           onChange={handleChange}
           placeholder='Подробное описание'
-          required
           className='w-full p-2 bg-gray-600 text-white rounded mt-4 h-32'
         />
         <button
