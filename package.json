@@ -15,6 +15,7 @@
     "fslightbox-react": "^1.7.6",
     "mongodb": "^6.8.1",
     "mongoose": "^8.6.2",
+    "nanoid": "^5.0.9",
     "next": "^14.2.8",
     "next-auth": "^4.24.10",
     "react": "^18",

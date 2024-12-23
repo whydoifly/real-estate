@@ -175,7 +175,7 @@ export default function PropertyList() {
   return (
     <div className='min-h-screen bg-gray-800 text-white'>
       <style>{swiperStyles}</style>
-      
+
       <div className='p-4 md:p-6'>
         <h1 className='text-4xl font-bold mb-8 text-center text-red-600'>
           Список объектов
@@ -185,11 +185,12 @@ export default function PropertyList() {
         <div className='max-w-[2000px] mx-auto mb-6'>
           <button
             onClick={() => setIsFilterVisible(!isFilterVisible)}
-            className='w-full bg-gray-700 rounded-lg p-4 flex items-center justify-between hover:bg-gray-600 transition-all duration-200'
-          >
+            className='w-full bg-gray-700 rounded-lg p-4 flex items-center justify-between hover:bg-gray-600 transition-all duration-200'>
             <div className='flex items-center gap-2'>
               <FaFilter className='text-red-500' />
-              <span className='text-xl font-semibold text-red-500'>Filters</span>
+              <span className='text-xl font-semibold text-red-500'>
+                Filters
+              </span>
             </div>
             {isFilterVisible ? (
               <FaChevronUp className='text-red-500' />
@@ -199,9 +200,14 @@ export default function PropertyList() {
           </button>
 
           {/* Collapsible Filter Section */}
-          <div className={`
+          <div
+            className={`
             bg-gray-700 rounded-lg mt-2 shadow-lg overflow-hidden transition-all duration-300
-            ${isFilterVisible ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'}
+            ${
+              isFilterVisible
+                ? 'max-h-[1000px] opacity-100'
+                : 'max-h-0 opacity-0'
+            }
           `}>
             <div className='p-6'>
               <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
@@ -259,7 +265,9 @@ export default function PropertyList() {
                         type='number'
                         placeholder='Min Price'
                         value={priceRange.min}
-                        onChange={(e) => handlePriceChange('min', e.target.value)}
+                        onChange={(e) =>
+                          handlePriceChange('min', e.target.value)
+                        }
                         className='w-full px-4 py-2 rounded-full bg-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500'
                       />
                     </div>
@@ -269,7 +277,9 @@ export default function PropertyList() {
                         type='number'
                         placeholder='Max Price'
                         value={priceRange.max}
-                        onChange={(e) => handlePriceChange('max', e.target.value)}
+                        onChange={(e) =>
+                          handlePriceChange('max', e.target.value)
+                        }
                         className='w-full px-4 py-2 rounded-full bg-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500'
                       />
                     </div>
@@ -370,7 +380,8 @@ export default function PropertyList() {
                     )}
                     {bedroomFilter !== 'all' && (
                       <span className='ml-2 inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-500/20 text-red-400'>
-                        {bedroomFilter} {bedroomFilter === '5' ? '+ ' : ''} Bedrooms
+                        {bedroomFilter} {bedroomFilter === '5' ? '+ ' : ''}{' '}
+                        Bedrooms
                       </span>
                     )}
                     {(priceRange.min || priceRange.max) && (
@@ -424,8 +435,7 @@ export default function PropertyList() {
                           className='h-full w-full swiper-container'
                           loop={true}
                           slidesPerView={1}
-                          watchOverflow={true}
-                        >
+                          watchOverflow={true}>
                           {property.photos.map((photo, index) => (
                             <SwiperSlide
                               key={index}
@@ -476,7 +486,9 @@ export default function PropertyList() {
                           {isAdmin && (
                             <div className='flex items-center text-gray-300'>
                               <span className='font-medium'>Phone:</span>
-                              <span className='ml-2'>{property.ownerPhone}</span>
+                              <span className='ml-2'>
+                                {property.ownerPhone}
+                              </span>
                             </div>
                           )}
                         </div>
