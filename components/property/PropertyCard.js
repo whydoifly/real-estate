@@ -1,4 +1,4 @@
- 'use client';
+'use client';
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
@@ -9,7 +9,12 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 
-export default function PropertyCard({ property, propertyIndex, isAdmin, onDelete }) {
+export default function PropertyCard({
+  property,
+  propertyIndex,
+  isAdmin,
+  onDelete,
+}) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -54,7 +59,7 @@ export default function PropertyCard({ property, propertyIndex, isAdmin, onDelet
           <div className='p-6'>
             <div className='flex justify-between items-start mb-4'>
               <h2 className='text-xl font-bold text-red-500 line-clamp-1'>
-                {property.address}
+                {property.address}, {property.district}
               </h2>
               <span
                 className={`px-3 py-1 rounded-full text-xs font-medium ${
@@ -66,14 +71,10 @@ export default function PropertyCard({ property, propertyIndex, isAdmin, onDelet
               </span>
             </div>
 
-            <div className='grid grid-cols-2 gap-4 mb-4'>
+            <div className='grid grid-cols-1 gap-4 mb-4'>
               <div className='flex items-center text-gray-300'>
                 <span className='font-medium'>Bedrooms:</span>
                 <span className='ml-2'>{property.bedrooms}</span>
-              </div>
-              <div className='flex items-center text-gray-300'>
-                <span className='font-medium'>Type:</span>
-                <span className='ml-2'>{property.type}</span>
               </div>
               <div className='flex items-center text-gray-300'>
                 <span className='font-medium'>Price:</span>
@@ -85,9 +86,14 @@ export default function PropertyCard({ property, propertyIndex, isAdmin, onDelet
                   <span className='ml-2'>{property.ownerPhone}</span>
                 </div>
               )}
+              <div className='flex items-center text-gray-300'>
+                <span className='font-medium'>Commission:</span>
+                <span className='ml-2'>${property.commission}</span>
+              </div>
             </div>
-
-            <p className='text-gray-300 line-clamp-2'>{property.description}</p>
+            <div className='flex items-center text-gray-300'>
+              <span>{property.features}</span>
+            </div>
           </div>
         </div>
       </Link>
