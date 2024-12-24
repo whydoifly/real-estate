@@ -11,7 +11,7 @@ export default function PropertyDetail() {
   const router = useRouter();
   const { data: session } = useSession();
   const isAdmin = session?.user?.role === 'admin';
-  
+
   const [state, setState] = useState({
     property: null,
     loading: true,
@@ -85,9 +85,9 @@ export default function PropertyDetail() {
     <div>
       <h2 className='text-2xl font-bold mb-4 text-red-500'>{title}</h2>
       {info.map(({ label, value }) => (
-        <p key={label} className="mb-2">
+        <p key={label} className='mb-2'>
           <strong className='text-red-400'>{label}:</strong>{' '}
-          <span className="text-gray-300">{value}</span>
+          <span className='text-gray-300'>{value}</span>
         </p>
       ))}
     </div>
@@ -122,22 +122,24 @@ export default function PropertyDetail() {
           <h2 className='text-2xl font-bold mb-4 text-red-500'>Description</h2>
           <p className='text-gray-300'>{property.description}</p>
         </div>
-        <div className='mt-6'>
-          <h2 className='text-2xl font-bold mb-4 text-red-500'>Photos</h2>
-          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
-            {property.photos.map((photo, index) => (
-              <Image
-                key={index}
-                src={photo}
-                alt={`Property photo ${index + 1}`}
-                className='rounded-lg shadow-lg cursor-pointer hover:opacity-90 transition-opacity'
-                onClick={() => openLightboxOnSlide(index + 1)}
-                width={600}
-                height={600}
-              />
-            ))}
+        {property.photos >= 1 && (
+          <div className='mt-6'>
+            <h2 className='text-2xl font-bold mb-4 text-red-500'>Photos</h2>
+            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
+              {property.photos.map((photo, index) => (
+                <Image
+                  key={index}
+                  src={photo}
+                  alt={`Property photo ${index + 1}`}
+                  className='rounded-lg shadow-lg cursor-pointer hover:opacity-90 transition-opacity'
+                  onClick={() => openLightboxOnSlide(index + 1)}
+                  width={600}
+                  height={600}
+                />
+              ))}
+            </div>
           </div>
-        </div>
+        )}
       </div>
       <FsLightbox
         toggler={lightbox.toggler}
