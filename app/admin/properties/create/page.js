@@ -23,6 +23,7 @@ export default function CreateProperty() {
   });
 
   const [errors, setErrors] = useState({});
+  const [uploading, setUploading] = useState(false);
   const router = useRouter();
 
   const requiredFields = [
@@ -40,15 +41,15 @@ export default function CreateProperty() {
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     const newValue = type === 'checkbox' ? checked : value;
-    
-    setFormData(prev => ({
+
+    setFormData((prev) => ({
       ...prev,
-      [name]: newValue
+      [name]: newValue,
     }));
 
     // Validate the changed field
     const newErrors = { ...errors };
-    
+
     // Clear previous error for this field
     delete newErrors[name];
 
@@ -58,9 +59,14 @@ export default function CreateProperty() {
     }
 
     // Validate number fields
-    if (newValue && ['size', 'bedrooms', 'price', 'commission'].includes(name)) {
+    if (
+      newValue &&
+      ['size', 'bedrooms', 'price', 'commission'].includes(name)
+    ) {
       if (isNaN(newValue)) {
-        newErrors[name] = `${name.charAt(0).toUpperCase() + name.slice(1)} must be a number`;
+        newErrors[name] = `${
+          name.charAt(0).toUpperCase() + name.slice(1)
+        } must be a number`;
       }
     }
 
@@ -70,7 +76,7 @@ export default function CreateProperty() {
   const validateForm = () => {
     const newErrors = {};
 
-    requiredFields.forEach(field => {
+    requiredFields.forEach((field) => {
       if (!formData[field]) {
         newErrors[field] = 'This field is required';
       }
@@ -96,34 +102,45 @@ export default function CreateProperty() {
 
   const handleImageUpload = async (e) => {
     const files = e.target.files;
+    if (!files.length) return;
+
+    setUploading(true);
     const uploadedPhotos = [];
 
-    for (let file of files) {
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('upload_preset', 'basic-preset');
+    try {
+      for (let file of files) {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('fileName', file.name);
 
-      const res = await fetch(
-        `https://api.cloudinary.com/v1_1/ddpoin0s6/image/upload`,
-        {
+        const res = await fetch('/api/upload', {
           method: 'POST',
           body: formData,
+        });
+
+        if (!res.ok) {
+          throw new Error('Upload failed');
         }
-      );
 
-      const data = await res.json();
-      uploadedPhotos.push(data.secure_url);
+        const data = await res.json();
+        uploadedPhotos.push(data.url);
+      }
+
+      setFormData((prev) => ({
+        ...prev,
+        photos: [...prev.photos, ...uploadedPhotos],
+      }));
+    } catch (error) {
+      console.error('Error uploading images:', error);
+      alert('Failed to upload images');
+    } finally {
+      setUploading(false);
     }
-
-    setFormData((prevData) => ({
-      ...prevData,
-      photos: uploadedPhotos,
-    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
@@ -134,7 +151,7 @@ export default function CreateProperty() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
-      
+
       if (res.ok) {
         router.push('/properties');
       } else {
@@ -155,7 +172,7 @@ export default function CreateProperty() {
         onSubmit={handleSubmit}
         className='bg-gray-700 p-6 rounded-lg shadow-lg max-w-2xl mx-auto'>
         {errors.submit && (
-          <div className="text-red-500 mb-4 text-center">{errors.submit}</div>
+          <div className='text-red-500 mb-4 text-center'>{errors.submit}</div>
         )}
         <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
           <input

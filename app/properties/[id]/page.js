@@ -122,7 +122,7 @@ export default function PropertyDetail() {
           <h2 className='text-2xl font-bold mb-4 text-red-500'>Description</h2>
           <p className='text-gray-300'>{property.description}</p>
         </div>
-        {property.photos >= 1 && (
+        {property.photos && property.photos.length > 0 && (
           <div className='mt-6'>
             <h2 className='text-2xl font-bold mb-4 text-red-500'>Photos</h2>
             <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
@@ -141,11 +141,13 @@ export default function PropertyDetail() {
           </div>
         )}
       </div>
-      <FsLightbox
-        toggler={lightbox.toggler}
-        sources={property.photos}
-        slide={lightbox.slide}
-      />
+      {property.photos && property.photos.length > 0 && (
+        <FsLightbox
+          toggler={lightbox.toggler}
+          sources={property.photos}
+          slide={lightbox.slide}
+        />
+      )}
     </div>
   );
 }

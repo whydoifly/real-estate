@@ -1,8 +1,16 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ['res.cloudinary.com'], // Add your image domain here
+    domains: ['ik.imagekit.io'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'ik.imagekit.io',
+        port: '',
+        pathname: '/**',
+      },
+    ],
   },
 };
 
-module.exports = nextConfig; 
+module.exports = nextConfig;
