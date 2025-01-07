@@ -61,21 +61,21 @@ export default function PropertyDetail() {
 
   const getBasicInfo = () => {
     const info = [
-      { label: 'Type', value: property.type },
+      { label: 'Тип', value: property.type },
       { label: 'Size', value: `${property.size}m²` },
-      { label: 'Bedrooms', value: property.bedrooms },
-      { label: 'Price', value: `$${property.price}` },
-      { label: 'Commission', value: property.commission },
-      { label: 'District', value: property.district },
+      { label: 'Спальни', value: property.bedrooms },
+      { label: 'Цена', value: `${property.price}$` },
+      { label: 'Комиссия', value: `${property.commission}$` },
+      { label: 'Район', value: property.district },
       {
-        label: 'Availability',
+        label: 'Доступно',
         value: property.occupancy ? '❌ Not Available' : '✅ Available',
       },
     ];
 
     // Only add phone number if user is admin
     if (isAdmin) {
-      info.push({ label: 'Owner Phone', value: property.ownerPhone });
+      info.push({ label: 'Номер / whatsapp хозяина', value: property.ownerPhone });
     }
 
     return info;
@@ -98,7 +98,7 @@ export default function PropertyDetail() {
       <button
         className='mb-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700'
         onClick={() => router.push('/properties')}>
-        Get to the list of properties
+        Вернуться к списку
       </button>
       <h1 className='text-4xl font-bold mb-8 text-center text-red-600'>
         {property.address}
@@ -106,20 +106,20 @@ export default function PropertyDetail() {
       <div className='bg-gray-700 p-6 rounded-lg shadow-lg'>
         <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
           {renderPropertyInfo('Basic Info', getBasicInfo())}
-          {renderPropertyInfo('Features', [
+          {renderPropertyInfo('Характеристики', [
             {
-              label: 'Allowed Pets',
+              label: 'Можно с животными',
               value: property.allowedPets ? '✅' : '❌',
             },
             {
-              label: 'Allowed Children',
+              label: 'Можно с детьми',
               value: property.allowedChildren ? '✅' : '❌',
             },
-            { label: 'Features', value: property.features.join(', ') },
+            { label: 'Удобства', value: property.features.join(', ') },
           ])}
         </div>
         <div className='mt-6'>
-          <h2 className='text-2xl font-bold mb-4 text-red-500'>Description</h2>
+          <h2 className='text-2xl font-bold mb-4 text-red-500'>Описание</h2>
           <p className='text-gray-300'>{property.description}</p>
         </div>
         {property.photos && property.photos.length > 0 && (

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 export default function EditProperty() {
   const pathname = usePathname();
@@ -26,6 +27,8 @@ export default function EditProperty() {
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [selectedPhotos, setSelectedPhotos] = useState(new Set());
 
   useEffect(() => {
     if (!id) return;
@@ -82,6 +85,64 @@ export default function EditProperty() {
       ...prev,
       photos: prev.photos.filter((_, i) => i !== index),
     }));
+  };
+
+  const handleImageUpload = async (e) => {
+    const files = e.target.files;
+    if (!files.length) return;
+
+    setUploading(true);
+    const uploadedPhotos = [];
+
+    try {
+      for (let file of files) {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('fileName', file.name);
+
+        const res = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!res.ok) {
+          throw new Error('Upload failed');
+        }
+
+        const data = await res.json();
+        uploadedPhotos.push(data.url);
+      }
+
+      setProperty((prev) => ({
+        ...prev,
+        photos: [...prev.photos, ...uploadedPhotos],
+      }));
+    } catch (error) {
+      console.error('Error uploading images:', error);
+      alert('Failed to upload images');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const togglePhotoSelection = (photoUrl) => {
+    setSelectedPhotos((prev) => {
+      const newSelection = new Set(prev);
+      if (newSelection.has(photoUrl)) {
+        newSelection.delete(photoUrl);
+      } else {
+        newSelection.add(photoUrl);
+      }
+      return newSelection;
+    });
+  };
+
+  const removeSelectedPhotos = () => {
+    setProperty((prev) => ({
+      ...prev,
+      photos: prev.photos.filter((photo) => !selectedPhotos.has(photo)),
+    }));
+    setSelectedPhotos(new Set());
   };
 
   const handleSubmit = async (e) => {
@@ -240,35 +301,77 @@ export default function EditProperty() {
             Allowed Children
           </label>
         </div>
-        <div className='mb-4'>
-          <h2 className='text-xl font-bold mb-2 text-red-500'>Photos</h2>
-          {property.photos.map((photo, index) => (
-            <div key={index} className='flex items-center mb-2'>
-              <input
-                type='text'
-                value={photo}
-                onChange={(e) => handlePhotoChange(index, e.target.value)}
-                placeholder={`Photo URL ${index + 1}`}
-                className='w-full p-2 bg-gray-600 text-white rounded mr-2'
-              />
-              <button
-                type='button'
-                onClick={() => handleRemovePhoto(index)}
-                className='bg-red-500 text-white px-2 py-1 rounded'>
-                Remove
-              </button>
+        <div className='mb-8'>
+          <div className='flex justify-between items-center mb-4'>
+            <h2 className='text-xl font-bold text-red-500'>Photos</h2>
+            <div className='flex gap-2'>
+              <label className='bg-green-500 text-white px-4 py-2 rounded cursor-pointer hover:bg-green-600 transition-colors'>
+                <input
+                  type='file'
+                  multiple
+                  onChange={handleImageUpload}
+                  className='hidden'
+                  accept='image/*'
+                />
+                Add Photos
+              </label>
+              {selectedPhotos.size > 0 && (
+                <button
+                  type='button'
+                  onClick={removeSelectedPhotos}
+                  className='bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition-colors'>
+                  Remove Selected ({selectedPhotos.size})
+                </button>
+              )}
             </div>
-          ))}
-          <button
-            type='button'
-            onClick={handleAddPhoto}
-            className='bg-green-500 text-white px-4 py-2 rounded'>
-            Add Photo
-          </button>
+          </div>
+
+          <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'>
+            {property.photos.map((photo, index) => (
+              <div
+                key={index}
+                className={`relative group cursor-pointer ${
+                  selectedPhotos.has(photo) ? 'ring-2 ring-red-500' : ''
+                }`}
+                onClick={() => togglePhotoSelection(photo)}>
+                <div className='aspect-square relative'>
+                  <Image
+                    src={photo}
+                    alt={`Property photo ${index + 1}`}
+                    fill
+                    className='object-cover rounded-lg'
+                    sizes='(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw'
+                  />
+                </div>
+                <div
+                  className={`absolute inset-0 bg-black/50 transition-opacity rounded-lg ${
+                    selectedPhotos.has(photo)
+                      ? 'opacity-100'
+                      : 'opacity-0 group-hover:opacity-50'
+                  }`}>
+                  <div className='absolute top-2 right-2'>
+                    <input
+                      type='checkbox'
+                      checked={selectedPhotos.has(photo)}
+                      onChange={() => {}}
+                      className='h-5 w-5'
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {uploading && (
+            <div className='mt-4 text-center text-gray-300'>
+              Uploading images...
+            </div>
+          )}
         </div>
+
         <button
           type='submit'
-          className='bg-blue-500 text-white px-4 py-2 rounded'>
+          className='bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 transition-colors w-full'>
           Save Changes
         </button>
       </form>

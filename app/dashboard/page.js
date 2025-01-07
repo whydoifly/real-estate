@@ -12,7 +12,7 @@ export default async function Dashboard() {
   return (
     <div className='container mx-auto p-4'>
       <h1 className='text-2xl font-bold mb-4'>
-        Welcome, {session.user.nickname}
+        Салютик, {session.user.nickname}!
       </h1>
 
       {/* Content for all users */}
@@ -20,7 +20,7 @@ export default async function Dashboard() {
       {/* Admin-only content */}
       {session.user.role === 'admin' && (
         <div>
-          <h2 className='text-xl font-semibold mb-2'>Admin Actions</h2>
+          <h2 className='text-xl font-semibold mb-2'>Действия администратора</h2>
           <ul>
             <li>
               <Link
