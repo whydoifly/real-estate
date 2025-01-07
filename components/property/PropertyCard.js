@@ -73,26 +73,31 @@ export default function PropertyCard({
 
             <div className='grid grid-cols-1 gap-4 mb-4'>
               <div className='flex items-center text-gray-300'>
-                <span className='font-medium'>Bedrooms:</span>
+                <span className='font-medium'>Спальни:</span>
                 <span className='ml-2'>{property.bedrooms}</span>
               </div>
               <div className='flex items-center text-gray-300'>
-                <span className='font-medium'>Price:</span>
+                <span className='font-medium'>Цена:</span>
                 <span className='ml-2'>${property.price}</span>
               </div>
               {isAdmin && (
                 <div className='flex items-center text-gray-300'>
-                  <span className='font-medium'>Phone:</span>
+                  <span className='font-medium'>Телефон / whatsapp:</span>
                   <span className='ml-2'>{property.ownerPhone}</span>
                 </div>
               )}
               <div className='flex items-center text-gray-300'>
-                <span className='font-medium'>Commission:</span>
+                <span className='font-medium'>Комиссия:</span>
                 <span className='ml-2'>${property.commission}</span>
               </div>
-            </div>
-            <div className='flex items-center text-gray-300'>
-              <span>{property.features}</span>
+              <div className='flex items-center text-gray-300'>
+                <span className='font-medium'>Можно с детьми:</span>
+                <span className='ml-2'>{property.allowedChildren ? '✅' : '❌'}</span>
+              </div>
+              <div className='flex items-center text-gray-300'>
+                <span className='font-medium'>Можно с животными:</span>
+                <span className='ml-2'>{property.allowedPets ? '✅' : '❌'}</span>
+              </div>
             </div>
           </div>
         </div>

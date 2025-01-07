@@ -75,7 +75,7 @@ export default function AdminUsers() {
   return (
     <div className='container mx-auto p-8 bg-gray-800 min-h-screen text-white'>
       <h1 className='text-4xl font-bold mb-8 text-center text-red-600'>
-        Manage Users
+        Управление пользователями
       </h1>
       <div className='bg-gray-700 rounded-lg shadow-lg p-6'>
         <ul className='space-y-4'>
@@ -88,13 +88,13 @@ export default function AdminUsers() {
                 <p className='text-gray-300'>{user.email}</p>
               </div>
               <div className='flex items-center gap-2'>
-                <span className='text-gray-300'>Role:</span>
+                <span className='text-gray-300'>Роль:</span>
                 <select
                   value={user.role}
                   onChange={(e) => updateUserRole(user._id, e.target.value)}
                   className='bg-gray-700 text-white px-3 py-1 rounded border border-gray-500 focus:outline-none focus:border-red-500'>
-                  <option value='user'>User</option>
-                  <option value='admin'>Admin</option>
+                  <option value='user'>Пользователь</option>
+                  <option value='admin'>Администратор</option>
                 </select>
               </div>
             </li>

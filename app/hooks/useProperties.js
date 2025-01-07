@@ -54,9 +54,9 @@ export function useProperties() {
   };
 
   const updateFilter = (filterType, value) => {
-    setFilters(prev => ({
+    setFilters((prev) => ({
       ...prev,
-      [filterType]: value
+      [filterType]: value,
     }));
   };
 
@@ -71,6 +71,8 @@ export function useProperties() {
     const bedroomMatch =
       filters.bedrooms === 'all'
         ? true
+        : filters.bedrooms === '5'
+        ? property.bedrooms >= 5
         : property.bedrooms === parseInt(filters.bedrooms);
 
     const priceMatch =

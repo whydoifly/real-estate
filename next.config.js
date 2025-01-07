@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ['ik.imagekit.io'],
+    domains: ['ik.imagekit.io', 'res.cloudinary.com'],
     remotePatterns: [
       {
         protocol: 'https',
@@ -9,7 +9,16 @@ const nextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+        port: '',
+        pathname: '/**',
+      },
     ],
+  },
+  experimental: {
+    optimizeFonts: true,
   },
 };
 
