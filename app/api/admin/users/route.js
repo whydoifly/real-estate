@@ -3,6 +3,7 @@ import User from '@/models/User';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../auth/[...nextauth]/route';
 import { NextResponse } from 'next/server';
+import bcrypt from 'bcrypt';
 
 export async function GET() {
   try {
@@ -56,6 +57,63 @@ export async function PUT(request) {
     console.error('Error updating user:', error);
     return NextResponse.json(
       { error: 'Failed to update user' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request) {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session || session.user.role !== 'admin') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    await dbConnect();
+    const { email, password, nickname, role } = await request.json();
+
+    // Validation
+    if (!email || !password || !nickname) {
+      return NextResponse.json(
+        { error: 'Missing required fields' },
+        { status: 400 }
+      );
+    }
+
+    // Check if user already exists
+    const existingUser = await User.findOne({ email: email.toLowerCase() });
+    if (existingUser) {
+      return NextResponse.json(
+        { error: 'Email already registered' },
+        { status: 400 }
+      );
+    }
+
+    // Hash password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    // Create new user
+    const user = await User.create({
+      email: email.toLowerCase(),
+      password: hashedPassword,
+      nickname,
+      role: role || 'user',
+    });
+
+    // Return user without password
+    return NextResponse.json({
+      user: {
+        id: user._id,
+        email: user.email,
+        nickname: user.nickname,
+        role: user.role,
+      },
+    });
+  } catch (error) {
+    console.error('Error creating user:', error);
+    return NextResponse.json(
+      { error: 'Failed to create user' },
       { status: 500 }
     );
   }
