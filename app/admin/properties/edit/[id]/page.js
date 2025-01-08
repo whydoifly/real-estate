@@ -17,6 +17,7 @@ export default function EditProperty() {
     size: '',
     bedrooms: '',
     price: '',
+    expenses: '',
     commission: '',
     district: '',
     description: '',
@@ -242,6 +243,14 @@ export default function EditProperty() {
           value={property.price || ''}
           onChange={handleInputChange}
           placeholder='Price'
+          className='w-full p-2 bg-gray-600 text-white rounded mb-4'
+        />
+        <input
+          name='expenses'
+          type='string'
+          value={property.expenses || ''}
+          onChange={handleInputChange}
+          placeholder='Дополнительные расходы'
           className='w-full p-2 bg-gray-600 text-white rounded mb-4'
         />
         <input

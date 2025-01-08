@@ -6,8 +6,6 @@ import SessionWrapper from '@/components/auth/SessionWrapper';
 const inter = Inter({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-inter',
-  preload: true,
 });
 
 export const metadata = {
@@ -22,18 +20,10 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang='en'>
-      <head>
-        <link 
-          rel="preload" 
-          href="/icons/favicon.ico" 
-          as="image" 
-          type="image/x-icon"
-        />
-      </head>
       <body className={inter.className}>
         <SessionWrapper>
           <Navbar />
-          <main>{children}</main>
+          {children}
         </SessionWrapper>
       </body>
     </html>

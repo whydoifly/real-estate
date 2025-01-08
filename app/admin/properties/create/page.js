@@ -15,6 +15,7 @@ export default function CreateProperty() {
     size: '',
     bedrooms: '',
     price: '',
+    expenses: '',
     commission: '',
     description: '',
     features: '',
@@ -248,13 +249,20 @@ export default function CreateProperty() {
             required
           />
           <PropertyFormInput
+            name='expenses'
+            label='Дополнительные расходы'
+            value={formData.expenses}
+            onChange={handleChange}
+            error={errors.expenses}
+            placeholder='Введите дополнительные расходы'
+          />
+          <PropertyFormInput
             name='commission'
             label='Комиссия'
             type='number'
             value={formData.commission}
             onChange={handleChange}
             error={errors.commission}
-            required
           />
           <PropertyFormInput
             name='features'

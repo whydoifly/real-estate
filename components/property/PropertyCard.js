@@ -80,12 +80,10 @@ export default function PropertyCard({
                 <span className='font-medium'>Цена:</span>
                 <span className='ml-2'>${property.price}</span>
               </div>
-              {isAdmin && (
-                <div className='flex items-center text-gray-300'>
-                  <span className='font-medium'>Телефон / whatsapp:</span>
-                  <span className='ml-2'>{property.ownerPhone}</span>
-                </div>
-              )}
+              <div className='flex items-center text-gray-300'>
+                <span className='font-medium'>Дополнительные расходы:</span>
+                <span className='ml-2'>${property.expenses}</span>
+              </div>
               <div className='flex items-center text-gray-300'>
                 <span className='font-medium'>Комиссия:</span>
                 <span className='ml-2'>${property.commission}</span>
