@@ -18,42 +18,33 @@ export async function POST(request) {
       );
     }
 
-    if (!/^\S+@\S+\.\S+$/.test(email)) {
-      return NextResponse.json(
-        { error: 'Invalid email format' },
-        { status: 400 }
-      );
-    }
-
-    if (password.length < 6) {
-      return NextResponse.json(
-        { error: 'Password must be at least 6 characters long' },
-        { status: 400 }
-      );
-    }
-
     // Check if user already exists
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({ email: email.toLowerCase() });
     if (existingUser) {
       return NextResponse.json(
-        { error: 'Email already in use' },
+        { error: 'Email already registered' },
         { status: 400 }
       );
     }
 
-    // Hash password
+    // Hash password manually instead of relying on middleware
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Create new user
-    const user = new User({
-      email,
-      password: hashedPassword,
+    // Create new user with hashed password
+    const user = await User.create({
+      email: email.toLowerCase(),
+      password: hashedPassword, // Use the hashed password
       nickname,
-      role: 'user', // Default role
+      role: 'user',
     });
 
-    await user.save();
+    // Log successful creation
+    console.log('User created successfully:', {
+      id: user._id,
+      email: user.email,
+      nickname: user.nickname,
+    });
 
     return NextResponse.json(
       { message: 'User registered successfully' },
