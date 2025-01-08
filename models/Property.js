@@ -38,6 +38,7 @@ const propertySchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  expenses: String,
   description: String,
   features: [String],
   allowedPets: {
