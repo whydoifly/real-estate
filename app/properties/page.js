@@ -1,6 +1,7 @@
 'use client';
 
 import { useProperties } from '@/app/hooks/useProperties';
+import { useFavorites } from '@/app/hooks/useFavorites';
 import { useSession } from 'next-auth/react';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import PropertyFilters from '@/components/property/PropertyFilters';
@@ -73,7 +74,7 @@ const swiperStyles = `
 export default function PropertyList() {
   const {
     properties: filteredProperties,
-    loading,
+    loading: propertiesLoading,
     error,
     filters,
     isFilterVisible,
@@ -81,12 +82,14 @@ export default function PropertyList() {
     updateFilter,
     handleDelete,
   } = useProperties();
-  
+
+  const { loading: favoritesLoading, isFavorite } = useFavorites();
   const { data: session } = useSession();
   const isAdmin = session?.user?.role === 'admin';
 
-  if (loading) return <LoadingSpinner />;
-  if (error) return <div className='text-center p-4 text-red-500'>Error: {error}</div>;
+  if (propertiesLoading || favoritesLoading) return <LoadingSpinner />;
+  if (error)
+    return <div className='text-center p-4 text-red-500'>Error: {error}</div>;
 
   return (
     <div className='min-h-screen bg-gray-800 text-white'>
@@ -127,6 +130,7 @@ export default function PropertyList() {
                   propertyIndex={propertyIndex}
                   isAdmin={isAdmin}
                   onDelete={handleDelete}
+                  initialIsFavorite={isFavorite(property._id)}
                 />
               ))}
             </div>
