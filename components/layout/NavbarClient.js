@@ -15,7 +15,7 @@ export default function NavbarClient() {
     if (status === 'unauthenticated') {
       // Optionally redirect to login page
       router.push('/login');
-      
+
       // Close mobile menu if it's open
       setIsMenuOpen(false);
     }
@@ -59,6 +59,11 @@ export default function NavbarClient() {
                     </Link>
                   </>
                 )}
+                <Link
+                  href='/favorites'
+                  className='hover:text-red-500 transition duration-300'>
+                  Избранное
+                </Link>
                 <button
                   onClick={handleSignOut}
                   className='hover:text-red-500 transition duration-300'>
@@ -130,6 +135,11 @@ export default function NavbarClient() {
                     </Link>
                   </>
                 )}
+                <Link
+                  href='/favorites'
+                  className='block hover:text-red-500 transition duration-300'>
+                  Избранное
+                </Link>
                 <button
                   onClick={handleSignOut}
                   className='block hover:text-red-500 transition duration-300'>
