@@ -71,10 +71,17 @@ export default function Login() {
               required
             />
           </div>
-          <div className='mb-6'>
-            <label htmlFor='password' className='block text-white mb-2'>
-              Password
-            </label>
+          <div className='mb-4'>
+            <div className='flex justify-between items-center'>
+              <label htmlFor='password' className='block text-white mb-2'>
+                Password
+              </label>
+              <Link
+                href='/forgot-password'
+                className='text-red-400 text-sm hover:underline'>
+                Забыли пароль?
+              </Link>
+            </div>
             <div className='relative'>
               <input
                 type={showPassword ? 'text' : 'password'}
